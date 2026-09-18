@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface IColegioRepository extends JpaRepository<Colegio,Long> {
-    public List<Colegio> findByStatusStreaming(boolean status);
+
 }

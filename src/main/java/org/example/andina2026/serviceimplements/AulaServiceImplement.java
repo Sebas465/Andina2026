@@ -3,10 +3,12 @@ package org.example.andina2026.serviceimplements;
 import org.example.andina2026.entities.Aula;
 import org.example.andina2026.repositories.IAulaRepository;
 import org.example.andina2026.serviceinterfaces.AulaServiceInterface;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class AulaServiceImplement implements AulaServiceInterface {
 
     private final IAulaRepository IAR;
