@@ -4,7 +4,7 @@ import org.example.andina2026.entities.Colegio;
 import java.util.List;
 import java.util.Optional;
 
-public interface ColegioSeviceInterface {
+public interface ColegioServiceInterface {
 
     public List<Colegio> list();
     public void insert(Colegio c);

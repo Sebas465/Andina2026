@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import org.example.andina2026.dtos.ColegioDTOInsert;
 import org.example.andina2026.dtos.ColegioDTOList;
 import org.example.andina2026.entities.Colegio;
-import org.example.andina2026.serviceinterfaces.ColegioSeviceInterface;
+import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +19,11 @@ import java.util.List;
 public class ColegioController {
 
 
-    private final ColegioSeviceInterface CSI;
+    private final ColegioServiceInterface CSI;
     private final ModelMapper MM;
 
     // generar constructor
-    public ColegioController(ColegioSeviceInterface CSI, ModelMapper MM) {
+    public ColegioController(ColegioServiceInterface CSI, ModelMapper MM) {
         this.CSI = CSI;
         this.MM = MM;
     }

@@ -2,14 +2,14 @@ package org.example.andina2026.serviceimplements;
 
 import org.example.andina2026.entities.Colegio;
 import org.example.andina2026.repositories.IColegioRepository;
-import org.example.andina2026.serviceinterfaces.ColegioSeviceInterface;
+import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ColegioServiceImplement implements ColegioSeviceInterface {
+public class ColegioServiceImplement implements ColegioServiceInterface {
 
     public final IColegioRepository ICR;
 

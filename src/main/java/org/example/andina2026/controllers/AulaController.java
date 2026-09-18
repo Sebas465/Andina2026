@@ -7,7 +7,7 @@ import org.example.andina2026.entities.Aula;
 import org.example.andina2026.entities.Colegio;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.AulaServiceInterface;
-import org.example.andina2026.serviceinterfaces.ColegioSeviceInterface;
+import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +22,9 @@ public class AulaController {
 
     private final AulaServiceInterface ASI;
     private final ModelMapper MM;
-    private final ColegioSeviceInterface CSI;
+    private final ColegioServiceInterface CSI;
 
-    public AulaController(AulaServiceInterface ASI, ModelMapper MM, ColegioSeviceInterface CSI) {
+    public AulaController(AulaServiceInterface ASI, ModelMapper MM, ColegioServiceInterface CSI) {
         this.ASI = ASI;
         this.MM = MM;
         this.CSI = CSI;
