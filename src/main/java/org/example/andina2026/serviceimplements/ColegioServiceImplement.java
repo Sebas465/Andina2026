@@ -13,9 +13,10 @@ public class ColegioServiceImplement implements ColegioSeviceInterface {
 
     public final IColegioRepository ICR;
 
-    public ColegioServiceImplement (IColegioRepository ICR) {
+    public ColegioServiceImplement(IColegioRepository ICR) {
         this.ICR = ICR;
     }
+
     @Override
     public List<Colegio> list(){return ICR.findAll();}
     @Override
@@ -24,4 +25,6 @@ public class ColegioServiceImplement implements ColegioSeviceInterface {
     public Optional<Colegio> listId(Long id){return ICR.findById(id);}
     @Override
     public void delete(Long id){ICR.deleteById(id);}
+
+
 }
