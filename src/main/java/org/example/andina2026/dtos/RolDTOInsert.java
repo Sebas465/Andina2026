@@ -1,12 +1,12 @@
 package org.example.andina2026.dtos;
 
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
 public class RolDTOInsert {
 
     private Long id_TipoPersona;
-    @NotEmpty(message = "El detalle es obligatorio")
+    @NotBlank(message = "El detalle es obligatorio")
     private Long detalle;
 
     public Long getId_TipoPersona() {
