@@ -11,6 +11,9 @@ public class Persona {
     @Column(name = "id_persona")
     private Long idPersona;
 
+    @Column(name = "codigo_estudiante", length = 12, unique = true)
+    private String codigoEstudiante;
+
     @Column(name = "nombres", length = 100, nullable = false)
     private String nombres;
 
@@ -22,6 +25,9 @@ public class Persona {
 
     @Column(name = "correo", length = 150, unique = true)
     private String correo;
+
+    @Column(name = "lengua_materna", length = 10)
+    private String lenguaMaterna;
 
     @Column(name = "estado", length = 20)
     private String estado;
@@ -43,6 +49,14 @@ public class Persona {
 
     public void setIdPersona(Long idPersona) {
         this.idPersona = idPersona;
+    }
+
+    public String getCodigoEstudiante() {
+        return codigoEstudiante;
+    }
+
+    public void setCodigoEstudiante(String codigoEstudiante) {
+        this.codigoEstudiante = codigoEstudiante;
     }
 
     public String getNombres() {
@@ -75,6 +89,14 @@ public class Persona {
 
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    public String getLenguaMaterna() {
+        return lenguaMaterna;
+    }
+
+    public void setLenguaMaterna(String lenguaMaterna) {
+        this.lenguaMaterna = lenguaMaterna;
     }
 
     public String getEstado() {

@@ -1,6 +1,10 @@
 package org.example.andina2026.entities;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "aulas")
@@ -19,9 +23,24 @@ public class Aula {
     @Column(name = "capacidad", nullable = false)
     private int capacidad;
 
+    @Column(name = "computadoras")
+    private Integer computadoras;
+
+    @Column(name = "proyectores")
+    private Integer proyectores;
+
+    @Column(name = "conexion_mbps", precision = 6, scale = 1)
+    private BigDecimal conexionMbps;
+
     @ManyToOne
     @JoinColumn(name = "id_colegio", nullable = false)
     private Colegio colegio;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "aula_grado",
+            joinColumns = @JoinColumn(name = "id_aula"),
+            inverseJoinColumns = @JoinColumn(name = "id_grado"))
+    private List<Grado> grados = new ArrayList<>();
 
     public Aula() {
     }
@@ -58,11 +77,43 @@ public class Aula {
         this.capacidad = capacidad;
     }
 
+    public Integer getComputadoras() {
+        return computadoras;
+    }
+
+    public void setComputadoras(Integer computadoras) {
+        this.computadoras = computadoras;
+    }
+
+    public Integer getProyectores() {
+        return proyectores;
+    }
+
+    public void setProyectores(Integer proyectores) {
+        this.proyectores = proyectores;
+    }
+
+    public BigDecimal getConexionMbps() {
+        return conexionMbps;
+    }
+
+    public void setConexionMbps(BigDecimal conexionMbps) {
+        this.conexionMbps = conexionMbps;
+    }
+
     public Colegio getColegio() {
         return colegio;
     }
 
     public void setColegio(Colegio colegio) {
         this.colegio = colegio;
+    }
+
+    public List<Grado> getGrados() {
+        return grados;
+    }
+
+    public void setGrados(List<Grado> grados) {
+        this.grados = grados;
     }
 }
