@@ -1,5 +1,6 @@
 package org.example.andina2026.controllers;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +30,7 @@ public class LoginController {
     }
 
     @PostMapping
+    @SecurityRequirements // público: Swagger no le envía el token (evita 401 si Authorize tiene algo inválido)
     public ResponseEntity<LoginResponseDTO> login(
             @RequestBody LoginRequestDTO request) {
 
