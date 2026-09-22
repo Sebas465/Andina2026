@@ -1,6 +1,5 @@
 package org.example.andina2026.serviceimplements;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.example.andina2026.entities.Role;
@@ -14,11 +13,9 @@ import java.util.Optional;
 @Service
 public class UsersServiceImplement implements UsersServiceInterface {
     private final IUsersRepository repository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UsersServiceImplement(IUsersRepository repository, PasswordEncoder passwordEncoder) {
+    public UsersServiceImplement(IUsersRepository repository) {
         this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -29,11 +26,11 @@ public class UsersServiceImplement implements UsersServiceInterface {
 
     @Override
     @Transactional
-    public Users insert(String dni, String username, String rawPassword, List<String> roles, Boolean enabled) {
+    public Users insert(String dni, String username, String passwordHash, List<String> roles, Boolean enabled) {
         Users u = new Users();
         u.setDni(dni);
         u.setUsername(username);
-        u.setPassword(passwordEncoder.encode(rawPassword)); // solo se guarda el hash BCrypt
+        u.setPassword(passwordHash); // llega ya hasheada con BCrypt desde el controller
         u.setEnabled(enabled == null || enabled);
         for (String rol : roles.stream().distinct().toList()) {
             Role r = new Role();

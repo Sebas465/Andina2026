@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.example.andina2026.repositories.IUsersRepository;
 import org.example.andina2026.serviceinterfaces.UsersServiceInterface;
@@ -19,16 +20,18 @@ public class AdminInicial implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(AdminInicial.class);
     private final IUsersRepository repository;
     private final UsersServiceInterface usersService;
+    private final PasswordEncoder passwordEncoder;
     private final String dni;
     private final String username;
     private final String password;
 
-    public AdminInicial(IUsersRepository repository, UsersServiceInterface usersService,
+    public AdminInicial(IUsersRepository repository, UsersServiceInterface usersService, PasswordEncoder passwordEncoder,
                         @Value("${andina.admin.dni:00000001}") String dni,
                         @Value("${andina.admin.username:admin}") String username,
                         @Value("${andina.admin.password:}") String password) {
         this.repository = repository;
         this.usersService = usersService;
+        this.passwordEncoder = passwordEncoder;
         this.dni = dni;
         this.username = username;
         this.password = password;
@@ -43,7 +46,7 @@ public class AdminInicial implements CommandLineRunner {
             log.warn("No hay usuarios. Define ANDINA_ADMIN_PASSWORD (mínimo 8 caracteres) para crear el ADMIN inicial.");
             return;
         }
-        usersService.insert(dni, username, password, List.of("ADMIN"), true);
+        usersService.insert(dni, username, passwordEncoder.encode(password), List.of("ADMIN"), true);
         log.info("Usuario ADMIN inicial '{}' (DNI {}) creado.", username, dni);
     }
 }
