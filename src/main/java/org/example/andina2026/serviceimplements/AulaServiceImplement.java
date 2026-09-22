@@ -40,4 +40,9 @@ public class AulaServiceImplement implements AulaServiceInterface {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public List<Object[]> ocupacionDeAulas() {
+        return repository.ocupacionDeAulas();
+    }
 }

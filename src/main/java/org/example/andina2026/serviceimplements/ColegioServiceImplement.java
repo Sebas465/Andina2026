@@ -40,4 +40,19 @@ public class ColegioServiceImplement implements ColegioServiceInterface {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public List<Object[]> escuelasInactivas(java.time.LocalDateTime desde) {
+        return repository.escuelasInactivas(desde);
+    }
+
+    @Override
+    public List<Object[]> rendimientoPorColegio(double notaMinima) {
+        return repository.rendimientoPorColegio(notaMinima);
+    }
+
+    @Override
+    public List<Object[]> matriculasPorColegioYPeriodo() {
+        return repository.matriculasPorColegioYPeriodo();
+    }
 }

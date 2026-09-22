@@ -11,4 +11,5 @@ public interface AsignacionDocenteServiceInterface {
     public Optional<AsignacionDocente> listId(Long id);
     public void update(AsignacionDocente a);
     public void delete(Long id);
+    List<Object[]> cargaDocente();
 }
