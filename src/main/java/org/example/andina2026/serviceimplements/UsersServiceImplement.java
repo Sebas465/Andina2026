@@ -29,8 +29,9 @@ public class UsersServiceImplement implements UsersServiceInterface {
 
     @Override
     @Transactional
-    public Users insert(String username, String rawPassword, List<String> roles, Boolean enabled) {
+    public Users insert(String dni, String username, String rawPassword, List<String> roles, Boolean enabled) {
         Users u = new Users();
+        u.setDni(dni);
         u.setUsername(username);
         u.setPassword(passwordEncoder.encode(rawPassword)); // solo se guarda el hash BCrypt
         u.setEnabled(enabled == null || enabled);
@@ -47,6 +48,11 @@ public class UsersServiceImplement implements UsersServiceInterface {
     @Transactional(readOnly = true)
     public Optional<Users> listId(Long id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public boolean existsDni(String dni) {
+        return repository.findByDni(dni).isPresent();
     }
 
     @Override

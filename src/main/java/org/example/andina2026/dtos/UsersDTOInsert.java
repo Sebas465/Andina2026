@@ -6,6 +6,10 @@ import java.util.List;
 
 /** Solo de entrada: la contraseña nunca se devuelve en ninguna respuesta. */
 public class UsersDTOInsert {
+    @NotBlank(message = "dni es obligatorio")
+    @Pattern(regexp = "\\d{8}", message = "dni debe tener 8 dígitos")
+    private String dni;
+
     @NotBlank(message = "username es obligatorio")
     @Size(min = 3, max = 50, message = "username debe tener entre 3 y 50 caracteres")
     @Pattern(regexp = "[a-zA-Z0-9._-]+", message = "username solo admite letras, números, punto, guion y guion bajo")
@@ -18,9 +22,17 @@ public class UsersDTOInsert {
     private String password;
 
     @NotEmpty(message = "roles es obligatorio")
-    private List<@Pattern(regexp = "ADMIN|DOCENTE|ALUMNO|PSICOLOGO", message = "rol no válido") String> roles;
+    private List<@Pattern(regexp = "ADMIN|ADMIN_ESCUELA|ESPECIALISTA|LOCAL", message = "rol no válido") String> roles;
 
     private Boolean enabled = true;
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
 
     public String getUsername() {
         return username;

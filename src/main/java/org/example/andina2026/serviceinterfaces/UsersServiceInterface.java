@@ -7,8 +7,9 @@ import java.util.Optional;
 
 public interface UsersServiceInterface {
     public List<Users> list();
-    public Users insert(String username, String rawPassword, List<String> roles, Boolean enabled);
+    public Users insert(String dni, String username, String rawPassword, List<String> roles, Boolean enabled);
     public Optional<Users> listId(Long id);
     public boolean existsUsername(String username);
+    public boolean existsDni(String dni);
     public void delete(Long id);
 }

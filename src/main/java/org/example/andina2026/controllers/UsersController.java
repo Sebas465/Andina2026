@@ -37,10 +37,13 @@ public class UsersController {
 
     @PostMapping
     public ResponseEntity<UsersDTOList> registrar(@Valid @RequestBody UsersDTOInsert dto) {
+        if (service.existsDni(dto.getDni())) {
+            throw new IllegalArgumentException("Ya existe un usuario con ese DNI");
+        }
         if (service.existsUsername(dto.getUsername())) {
             throw new IllegalArgumentException("Ya existe el usuario: " + dto.getUsername());
         }
-        Users u = service.insert(dto.getUsername(), dto.getPassword(), dto.getRoles(), dto.getEnabled());
+        Users u = service.insert(dto.getDni(), dto.getUsername(), dto.getPassword(), dto.getRoles(), dto.getEnabled());
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -63,6 +66,7 @@ public class UsersController {
     private UsersDTOList toList(Users u) {
         UsersDTOList dto = new UsersDTOList();
         dto.setId(u.getId());
+        dto.setDni(u.getDni());
         dto.setUsername(u.getUsername());
         dto.setEnabled(u.getEnabled());
         dto.setRoles(u.getRoles().stream().map(r -> r.getRol().replaceFirst("^ROLE_", "")).toList());

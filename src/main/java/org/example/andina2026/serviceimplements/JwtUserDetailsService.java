@@ -26,7 +26,8 @@ public class JwtUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        Users user = usersRepository.findByUsername(username)
+        // H2.1: el identificador de inicio de sesión es el DNI
+        Users user = usersRepository.findByDni(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
                                 "Usuario no encontrado: " + username
@@ -40,7 +41,7 @@ public class JwtUserDetailsService implements UserDetailsService {
                 .toList();
 
         return User.builder()
-                .username(user.getUsername())
+                .username(user.getDni())
                 .password(user.getPassword())
                 .authorities(authorities)
                 .disabled(!Boolean.TRUE.equals(user.getEnabled()))

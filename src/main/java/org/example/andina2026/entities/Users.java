@@ -22,6 +22,10 @@ public class Users implements Serializable {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
+    // H2.1: se inicia sesión con el DNI (único)
+    @Column(length = 8, unique = true)
+    private String dni;
+
     @Column(nullable = false, length = 200)
     private String password;
 
@@ -45,6 +49,14 @@ public class Users implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
     public String getUsername() {
