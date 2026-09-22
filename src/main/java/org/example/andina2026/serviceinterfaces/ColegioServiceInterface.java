@@ -11,7 +11,7 @@ public interface ColegioServiceInterface {
     public Optional<Colegio> listId(Long id);
     public void update(Colegio c);
     public void delete(Long id);
-    List<Object[]> escuelasInactivas(java.time.LocalDateTime desde);
+    List<Colegio> escuelasInactivas(java.time.LocalDateTime desde);
     List<Object[]> rendimientoPorColegio(double notaMinima);
     List<Object[]> matriculasPorColegioYPeriodo();
 }

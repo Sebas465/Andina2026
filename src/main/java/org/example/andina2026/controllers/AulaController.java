@@ -9,6 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.example.andina2026.dtos.AulaDTOInsert;
 import org.example.andina2026.dtos.AulaDTOList;
 import org.example.andina2026.entities.Aula;
+import org.example.andina2026.dtos.ReporteAgrupadoDTO;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.AulaServiceInterface;
 import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
@@ -129,4 +130,27 @@ public class AulaController {
         dto.setIdGrados(e.getGrados().stream().map(Grado::getIdGrado).toList());
         return dto;
     }
+
+    // ---------------------------------------------------------------- reportes
+
+    /** ¿Hay que abrir secciones o redistribuir? Alumnos por aula. */
+    @GetMapping("/reporte-ocupacion")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<List<ReporteAgrupadoDTO>> reporteOcupacion() {
+
+        List<ReporteAgrupadoDTO> lista = service.ocupacionDeAulas()
+                .stream()
+                .map(item -> {
+                    ReporteAgrupadoDTO dto = new ReporteAgrupadoDTO();
+
+                    dto.setCategoria((String) item[0]);
+                    dto.setCantidad(((Number) item[1]).intValue());
+
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
 }

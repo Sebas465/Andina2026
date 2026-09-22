@@ -53,27 +53,26 @@ Cada uno tiene `GET` lista, `GET /{id}`, `POST`, `PUT /{id}` y `DELETE /{id}`.
 - **Perfil académico**: `notas` y `estadoPsicologico` no salen en la lista; solo en el detalle (personal docente, incluido ESPECIALISTA).
 - Errores de BD (duplicados, borrar con datos relacionados) → 409 con mensaje genérico, sin detalles internos.
 
-## Reportes para decidir (`/api/reportes`)
+## Reportes para decidir (cada uno dentro del controller de su entidad)
 
-La consulta nativa (`@Query(nativeQuery = true)`) está en el repository de su entidad, el service la expone y
-`ReporteController` arma la respuesta:
-- **Filas de una entidad** (`cursos-sin-docente`, `cursos-sin-material` → `List<Curso>`; `alumnos-en-riesgo` →
-  `List<Persona>`): se convierten con `modelMapper.map(x, CursoDTOList.class)` / `PersonaDTOList`, como el top10 de Cita.
-- **Totales y promedios** (los demás): devuelven `List<Object[]>` y cada fila se pasa a su DTO con setters, como `/total`
-  de demoSM2.
+La consulta nativa (`@Query(nativeQuery = true)`) vive en el repository de su entidad, el service la expone y el
+controller arma la respuesta. Si la consulta devuelve filas de una entidad se pasan al DTO con `modelMapper.map(...)`;
+si calcula totales, devuelve `List<Object[]>` y cada fila se pasa al DTO con setters.
 
 | Endpoint | Pregunta que responde | Roles |
 |---|---|---|
-| `alumnos-menor-promedio?limite=10&lengua=QUECHUA&idGrado=…` | ¿A quién apoyar primero? (filtros H6.1) | personal docente |
-| `alumnos-menor-promedio/csv` | La misma lista para Excel (H6.2) | personal docente |
-| `alumnos-en-riesgo` | Desaprobado + observación psicológica (sin texto clínico) | personal docente |
-| `rendimiento-colegios` | ¿Qué colegio necesita más recursos? | personal docente |
-| `escuelas-inactivas?dias=30` | Escuelas sin cambios ni matrículas en N días (H1.1) | ADMIN, ADMIN_ESCUELA |
-| `ocupacion-aulas` | ¿Abrir secciones o redistribuir? | ADMIN, ADMIN_ESCUELA |
-| `carga-docente` | ¿Hay docentes sobrecargados? | ADMIN, ADMIN_ESCUELA |
-| `cursos-sin-docente/{idPeriodo}` | ¿Qué falta asignar en el periodo? | ADMIN, ADMIN_ESCUELA |
-| `cursos-sin-material` | ¿Dónde crear material primero? | personal docente |
-| `matriculas-colegio-periodo` | ¿Cuánta demanda tiene cada colegio? | ADMIN, ADMIN_ESCUELA |
+| `/api/perfiles-academicos/reporte-menor-promedio?limite=10&lengua=QUECHUA&idGrado=…` | ¿A quién apoyar primero? (filtros H6.1) | personal docente |
+| `/api/perfiles-academicos/reporte-menor-promedio/csv` | La misma lista para Excel (H6.2) | personal docente |
+| `/api/personas/reporte-en-riesgo` | Desaprobado + observación psicológica (devuelve la ficha del alumno) | personal docente |
+| `/api/colegios/reporte-rendimiento` | ¿Qué colegio necesita más recursos? | personal docente |
+| `/api/colegios/reporte-inactivos?dias=30` | Escuelas sin cambios ni matrículas en N días (H1.1) | ADMIN, ADMIN_ESCUELA |
+| `/api/colegios/reporte-matriculas` | ¿Cuánta demanda tiene cada colegio por periodo? | ADMIN, ADMIN_ESCUELA |
+| `/api/aula/reporte-ocupacion` | ¿Abrir secciones o redistribuir? Alumnos por aula | ADMIN, ADMIN_ESCUELA |
+| `/api/asignaciones-docentes/reporte-carga-docente` | ¿Hay docentes sobrecargados? | ADMIN, ADMIN_ESCUELA |
+| `/api/cursos/reporte-sin-docente/{idPeriodo}` | ¿Qué falta asignar en el periodo? | ADMIN, ADMIN_ESCUELA |
+| `/api/cursos/reporte-sin-material` | ¿Dónde crear material primero? | personal docente |
+
+`ReporteAgrupadoDTO` (categoría + cantidad) se reutiliza en ocupación de aulas, carga docente y matrículas por colegio.
 
 ## Cambios para cumplir el Word (Trabajo Parcial)
 

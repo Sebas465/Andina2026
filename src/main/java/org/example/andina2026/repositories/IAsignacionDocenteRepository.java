@@ -10,13 +10,12 @@ import java.util.List;
 
 @Repository
 public interface IAsignacionDocenteRepository extends JpaRepository<AsignacionDocente, Long> {
-    // ¿Algún docente está sobrecargado? Cursos y horas semanales por docente y periodo.
-    @Query(value = "SELECT p.id_persona, p.nombres, p.apellidos, pe.nombre AS periodo,\n" +
-            "        COUNT(ad.id_asignacion) AS cursos, COALESCE(SUM(ad.horas_semanales), 0) AS horas\n" +
+    // ¿Algún docente está sobrecargado? Cursos que dicta cada docente por periodo.
+    @Query(value = "SELECT p.nombres || ' ' || p.apellidos || ' (' || pe.nombre || ')' AS categoria, COUNT(ad.id_asignacion) AS cantidad\n" +
             " FROM asignaciones_docentes ad\n" +
-            " JOIN personas p            ON p.id_persona = ad.id_persona\n" +
+            " JOIN personas p             ON p.id_persona = ad.id_persona\n" +
             " JOIN periodos_academicos pe ON pe.id_periodo = ad.id_periodo\n" +
             " GROUP BY p.id_persona, p.nombres, p.apellidos, pe.nombre\n" +
-            " ORDER BY horas DESC", nativeQuery = true)
+            " ORDER BY cantidad DESC, categoria ASC", nativeQuery = true)
     List<Object[]> cargaDocente();
 }

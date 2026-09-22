@@ -9,6 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.example.andina2026.dtos.CursoDTOInsert;
 import org.example.andina2026.dtos.CursoDTOList;
 import org.example.andina2026.entities.Curso;
+import org.example.andina2026.serviceinterfaces.PeriodoAcademicoServiceInterface;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.CursoServiceInterface;
 
@@ -21,10 +22,12 @@ import java.util.Objects;
 @RequestMapping("/api/cursos")
 public class CursoController {
     private final CursoServiceInterface service;
+    private final PeriodoAcademicoServiceInterface periodoService;
     private final ModelMapper modelMapper;
 
-    public CursoController(CursoServiceInterface service, ModelMapper modelMapper) {
+    public CursoController(CursoServiceInterface service, PeriodoAcademicoServiceInterface periodoService, ModelMapper modelMapper) {
         this.service = service;
+        this.periodoService = periodoService;
         this.modelMapper = modelMapper;
     }
 
@@ -79,6 +82,37 @@ public class CursoController {
     private Curso buscar(Long id) {
         return service.listId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Curso con id: " + id));
+    }
+
+
+    // ---------------------------------------------------------------- reportes
+
+    /** ¿Qué cursos siguen sin docente en un periodo? */
+    @GetMapping("/reporte-sin-docente/{idPeriodo}")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<List<CursoDTOList>> reporteSinDocente(@PathVariable Long idPeriodo) {
+        periodoService.listId(idPeriodo)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe PeriodoAcademico con id: " + idPeriodo));
+
+        List<CursoDTOList> lista = service.cursosSinDocente(idPeriodo)
+                .stream()
+                .map(x -> modelMapper.map(x, CursoDTOList.class))
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    /** ¿Para qué cursos hay que preparar material primero? */
+    @GetMapping("/reporte-sin-material")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
+    public ResponseEntity<List<CursoDTOList>> reporteSinMaterial() {
+
+        List<CursoDTOList> lista = service.cursosSinMaterial()
+                .stream()
+                .map(x -> modelMapper.map(x, CursoDTOList.class))
+                .toList();
+
+        return ResponseEntity.ok(lista);
     }
 
 }

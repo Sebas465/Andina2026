@@ -9,6 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.example.andina2026.dtos.AsignacionDocenteDTOInsert;
 import org.example.andina2026.dtos.AsignacionDocenteDTOList;
 import org.example.andina2026.entities.AsignacionDocente;
+import org.example.andina2026.dtos.ReporteAgrupadoDTO;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.AsignacionDocenteServiceInterface;
 import org.example.andina2026.serviceinterfaces.AulaServiceInterface;
@@ -125,4 +126,27 @@ public class AsignacionDocenteController {
         dto.setIdColegio(e.getColegio() != null ? e.getColegio().getIdColegio() : null);
         return dto;
     }
+
+    // ---------------------------------------------------------------- reportes
+
+    /** ¿Algún docente está sobrecargado? Cursos que dicta cada docente por periodo. */
+    @GetMapping("/reporte-carga-docente")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<List<ReporteAgrupadoDTO>> reporteCargaDocente() {
+
+        List<ReporteAgrupadoDTO> lista = service.cargaDocente()
+                .stream()
+                .map(item -> {
+                    ReporteAgrupadoDTO dto = new ReporteAgrupadoDTO();
+
+                    dto.setCategoria((String) item[0]);
+                    dto.setCantidad(((Number) item[1]).intValue());
+
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
 }

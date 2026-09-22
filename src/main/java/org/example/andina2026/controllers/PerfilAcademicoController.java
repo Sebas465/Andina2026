@@ -9,6 +9,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.example.andina2026.dtos.PerfilAcademicoDTOInsert;
 import org.example.andina2026.dtos.PerfilAcademicoDTOList;
 import org.example.andina2026.entities.PerfilAcademico;
+import org.example.andina2026.dtos.AlumnoRendimientoDTO;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.math.BigDecimal;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.PerfilAcademicoServiceInterface;
 import org.example.andina2026.serviceinterfaces.PersonaServiceInterface;
@@ -115,4 +119,76 @@ public class PerfilAcademicoController {
         dto.setIdPersona(e.getPersona() != null ? e.getPersona().getIdPersona() : null);
         return dto;
     }
+
+    // ---------------------------------------------------------------- reportes
+
+    /** Nota mínima aprobatoria (escala vigesimal). */
+    private static final double NOTA_MINIMA = 11.0;
+
+    /** ¿A quién apoyar primero? Los alumnos con el promedio más bajo (filtros: lengua materna y grado). */
+    @GetMapping("/reporte-menor-promedio")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
+    public ResponseEntity<List<AlumnoRendimientoDTO>> reporteMenorPromedio(
+            @RequestParam(defaultValue = "10") int limite,
+            @RequestParam(required = false) String lengua,
+            @RequestParam(required = false) Long idGrado) {
+        if (limite < 1 || limite > 100) {
+            throw new IllegalArgumentException("limite debe estar entre 1 y 100");
+        }
+        if (lengua != null && !lengua.matches("QUECHUA|CASTELLANO|AMBOS")) {
+            throw new IllegalArgumentException("lengua debe ser QUECHUA, CASTELLANO o AMBOS");
+        }
+
+        List<AlumnoRendimientoDTO> lista = service.alumnosConMenorPromedio(limite, lengua, idGrado)
+                .stream()
+                .map(item -> {
+                    AlumnoRendimientoDTO dto = new AlumnoRendimientoDTO();
+
+                    dto.setIdPersona(((Number) item[0]).longValue());
+                    dto.setNombres((String) item[1]);
+                    dto.setApellidos((String) item[2]);
+                    dto.setAula((String) item[3]);
+                    dto.setColegio((String) item[4]);
+                    dto.setPromedio(new BigDecimal(item[5].toString()));
+
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    /** H6.2: la misma lista priorizada, exportable a CSV (se abre en Excel con tildes correctas). */
+    @GetMapping(value = "/reporte-menor-promedio/csv", produces = "text/csv")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
+    public ResponseEntity<String> reporteMenorPromedioCsv(@RequestParam(defaultValue = "10") int limite,
+                                                          @RequestParam(required = false) String lengua,
+                                                          @RequestParam(required = false) Long idGrado) {
+        List<AlumnoRendimientoDTO> lista = reporteMenorPromedio(limite, lengua, idGrado).getBody();
+        StringBuilder csv = new StringBuilder("\uFEFFprioridad,idPersona,nombres,apellidos,aula,colegio,promedio\n");
+        int i = 1;
+        for (AlumnoRendimientoDTO a : lista) {
+            csv.append(i++).append(',').append(a.getIdPersona()).append(',')
+                    .append(celda(a.getNombres())).append(',').append(celda(a.getApellidos())).append(',')
+                    .append(celda(a.getAula())).append(',').append(celda(a.getColegio())).append(',')
+                    .append(a.getPromedio()).append('\n');
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"alumnos_refuerzo.csv\"")
+                .contentType(new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8))
+                .body(csv.toString());
+    }
+
+    /** Celda CSV segura: comillas escapadas y sin fórmulas (evita inyección CSV en Excel). */
+    private static String celda(String v) {
+        if (v == null) {
+            return "";
+        }
+        String s = v;
+        if (!s.isEmpty() && "=+-@".indexOf(s.charAt(0)) >= 0) {
+            s = "'" + s;
+        }
+        return "\"" + s.replace("\"", "\"\"") + "\"";
+    }
+
 }

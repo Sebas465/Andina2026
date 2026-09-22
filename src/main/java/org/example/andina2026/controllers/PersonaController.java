@@ -176,4 +176,23 @@ public class PersonaController {
         dto.setIdRol(e.getRol() != null ? e.getRol().getIdTipoPersona() : null);
         return dto;
     }
+
+    // ---------------------------------------------------------------- reportes
+
+    /** Nota mínima aprobatoria (escala vigesimal). */
+    private static final double NOTA_MINIMA = 11.0;
+
+    /** ¿A quién debe atender primero psicología? Alumnos desaprobados con observación psicológica. */
+    @GetMapping("/reporte-en-riesgo")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
+    public ResponseEntity<List<PersonaDTOList>> reporteEnRiesgo() {
+
+        List<PersonaDTOList> lista = service.alumnosEnRiesgo(NOTA_MINIMA)
+                .stream()
+                .map(x -> toList(x))
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
 }

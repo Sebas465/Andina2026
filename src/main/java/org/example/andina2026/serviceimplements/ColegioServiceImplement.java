@@ -42,7 +42,7 @@ public class ColegioServiceImplement implements ColegioServiceInterface {
     }
 
     @Override
-    public List<Object[]> escuelasInactivas(java.time.LocalDateTime desde) {
+    public List<Colegio> escuelasInactivas(java.time.LocalDateTime desde) {
         return repository.escuelasInactivas(desde);
     }
 

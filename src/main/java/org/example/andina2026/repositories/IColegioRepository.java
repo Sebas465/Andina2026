@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface IColegioRepository extends JpaRepository<Colegio, Long> {
     // H1.1: ¿qué escuelas no tienen actividad (cambios registrados o matrículas) desde :desde?
-    @Query(value = "SELECT c.id_colegio, c.nombre, c.codigo_modular, MAX(act.fecha) AS ultima\n" +
+    @Query(value = "SELECT c.*\n" +
             " FROM colegios c\n" +
             " LEFT JOIN (\n" +
             "     SELECT m.id_colegio, CAST(dm.fecha_matricula AS TIMESTAMP) AS fecha\n" +
@@ -25,10 +25,10 @@ public interface IColegioRepository extends JpaRepository<Colegio, Long> {
             "     JOIN personas p ON a.entidad = 'Persona' AND a.id_registro = p.id_persona\n" +
             "     JOIN aulas au ON au.id_aula = p.id_aula\n" +
             " ) act ON act.id_colegio = c.id_colegio\n" +
-            " GROUP BY c.id_colegio, c.nombre, c.codigo_modular\n" +
+            " GROUP BY c.id_colegio, c.codigo_modular, c.nombre, c.departamento, c.provincia, c.distrito, c.comunidad, c.tipo_zona\n" +
             " HAVING MAX(act.fecha) IS NULL OR MAX(act.fecha) < :desde\n" +
-            " ORDER BY ultima ASC NULLS FIRST", nativeQuery = true)
-    List<Object[]> escuelasInactivas(@Param("desde") java.time.LocalDateTime desde);
+            " ORDER BY MAX(act.fecha) ASC NULLS FIRST", nativeQuery = true)
+    List<Colegio> escuelasInactivas(@Param("desde") java.time.LocalDateTime desde);
 
     // ¿Qué colegio necesita más recursos? Promedio y % de desaprobados por colegio.
     @Query(value = "SELECT c.id_colegio, c.nombre, c.tipo_zona,\n" +
@@ -47,12 +47,12 @@ public interface IColegioRepository extends JpaRepository<Colegio, Long> {
     List<Object[]> rendimientoPorColegio(@Param("notaMinima") double notaMinima);
 
     // ¿Cuánta demanda tiene cada colegio por periodo? Alumnos distintos matriculados.
-    @Query(value = "SELECT c.id_colegio, c.nombre, pe.nombre AS periodo, COUNT(DISTINCT m.id_persona) AS alumnos\n" +
+    @Query(value = "SELECT c.nombre || ' (' || pe.nombre || ')' AS categoria, COUNT(DISTINCT m.id_persona) AS cantidad\n" +
             " FROM detalles_matricula dm\n" +
             " JOIN matriculas m           ON m.id_matricula = dm.id_matricula\n" +
             " JOIN colegios c             ON c.id_colegio = m.id_colegio\n" +
             " JOIN periodos_academicos pe ON pe.id_periodo = dm.id_periodo\n" +
             " GROUP BY c.id_colegio, c.nombre, pe.nombre\n" +
-            " ORDER BY alumnos DESC", nativeQuery = true)
+            " ORDER BY cantidad DESC, categoria ASC", nativeQuery = true)
     List<Object[]> matriculasPorColegioYPeriodo();
 }

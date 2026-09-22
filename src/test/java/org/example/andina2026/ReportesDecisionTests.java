@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/** Comprueba que cada consulta nativa de /api/reportes devuelve la respuesta correcta (con BD propia). */
+/** Comprueba que cada reporte (consulta nativa, dentro del controller de su entidad) devuelve lo correcto. */
 // BD en memoria propia: estos datos no se mezclan con los de SeguridadYModeloTests
 @SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:reportes;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH")
 @AutoConfigureMockMvc
@@ -111,7 +111,7 @@ class ReportesDecisionTests {
 
     @Test
     void losDiezPeoresAlumnosEnOrdenYConFiltros() throws Exception {
-        mvc.perform(as(especialista, get("/api/reportes/alumnos-menor-promedio")))
+        mvc.perform(as(especialista, get("/api/perfiles-academicos/reporte-menor-promedio")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(10)))
                 .andExpect(jsonPath("$[0].nombres").value("Alumno5"))
@@ -120,16 +120,16 @@ class ReportesDecisionTests {
                 .andExpect(jsonPath("$[9].nombres").value("Alumno15"))
                 .andExpect(jsonPath("$[*].nombres", not(hasItem("Profe"))))
                 .andExpect(jsonPath("$[*].nombres", not(hasItem("SinNota"))));
-        mvc.perform(as(especialista, get("/api/reportes/alumnos-menor-promedio?limite=3"))).andExpect(jsonPath("$", hasSize(3)));
+        mvc.perform(as(especialista, get("/api/perfiles-academicos/reporte-menor-promedio?limite=3"))).andExpect(jsonPath("$", hasSize(3)));
         // H6.1: filtros por lengua materna y por grado
-        mvc.perform(as(local, get("/api/reportes/alumnos-menor-promedio?lengua=CASTELLANO")))
+        mvc.perform(as(local, get("/api/perfiles-academicos/reporte-menor-promedio?lengua=CASTELLANO")))
                 .andExpect(jsonPath("$", hasSize(6))).andExpect(jsonPath("$[0].nombres").value("Alumno12"));
-        mvc.perform(as(local, get("/api/reportes/alumnos-menor-promedio?idGrado=" + grado)))
+        mvc.perform(as(local, get("/api/perfiles-academicos/reporte-menor-promedio?idGrado=" + grado)))
                 .andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[*].nombres", containsInAnyOrder("Alumno5", "Alumno6")));
-        mvc.perform(as(local, get("/api/reportes/alumnos-menor-promedio?lengua=INGLES"))).andExpect(status().isBadRequest());
-        mvc.perform(as(local, get("/api/reportes/alumnos-menor-promedio?limite=0"))).andExpect(status().isBadRequest());
+        mvc.perform(as(local, get("/api/perfiles-academicos/reporte-menor-promedio?lengua=INGLES"))).andExpect(status().isBadRequest());
+        mvc.perform(as(local, get("/api/perfiles-academicos/reporte-menor-promedio?limite=0"))).andExpect(status().isBadRequest());
         // H6.2: exportación CSV con cabecera, 3 filas y el peor alumno primero
-        String csv = mvc.perform(as(local, get("/api/reportes/alumnos-menor-promedio/csv?limite=3")))
+        String csv = mvc.perform(as(local, get("/api/perfiles-academicos/reporte-menor-promedio/csv?limite=3")))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", containsString("alumnos_refuerzo.csv")))
                 .andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
@@ -141,19 +141,19 @@ class ReportesDecisionTests {
 
     @Test
     void alumnosEnRiesgoSinTextoClinico() throws Exception {
-        String body = mvc.perform(as(local, get("/api/reportes/alumnos-en-riesgo")))
+        String body = mvc.perform(as(local, get("/api/personas/reporte-en-riesgo")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))                       // solo el 8 (el 15 aprueba)
                 .andExpect(jsonPath("$[0].nombres").value("Alumno8"))
                 .andReturn().getResponse().getContentAsString();
         assertThat(body).doesNotContain("Duelo", "Estrés", "estadoPsicologico", "correo", "fechaNacimiento");
-        mvc.perform(as(especialista, get("/api/reportes/alumnos-en-riesgo"))).andExpect(status().isOk());
+        mvc.perform(as(especialista, get("/api/personas/reporte-en-riesgo"))).andExpect(status().isOk());
     }
 
     @Test
     void rendimientoPorColegio() throws Exception {
         // IE Rural: notas 5..10 → promedio 7.50, 6/6 desaprobados (100 %); IE Urbana: 12..17 → 14.50, 0 %
-        mvc.perform(as(especialista, get("/api/reportes/rendimiento-colegios")))
+        mvc.perform(as(especialista, get("/api/colegios/reporte-rendimiento")))
                 .andExpect(jsonPath("$[0].colegio").value("IE Rural"))
                 .andExpect(jsonPath("$[0].tipoZona").value("RURAL"))
                 .andExpect(jsonPath("$[0].promedio").value(7.5))
@@ -165,29 +165,27 @@ class ReportesDecisionTests {
 
     @Test
     void ocupacionCargaPendientesEInactivas() throws Exception {
-        mvc.perform(as(adminEscuela, get("/api/reportes/ocupacion-aulas")))
-                .andExpect(jsonPath("$[0].aula").value("A1"))
-                .andExpect(jsonPath("$[0].alumnos").value(6))               // el docente no cuenta como alumno
-                .andExpect(jsonPath("$[0].porcentajeOcupacion").value(100.0));
-        mvc.perform(as(adminEscuela, get("/api/reportes/carga-docente")))
-                .andExpect(jsonPath("$[0].nombres").value("Profe"))
-                .andExpect(jsonPath("$[0].cursos").value(2))
-                .andExpect(jsonPath("$[0].horasSemanales").value(7.5));
-        mvc.perform(as(adminEscuela, get("/api/reportes/cursos-sin-docente/" + periodo)))
+        mvc.perform(as(adminEscuela, get("/api/aula/reporte-ocupacion")))
+                // el docente no cuenta como alumno: A1 tiene 6
+                .andExpect(jsonPath("$[?(@.categoria == 'A1 - IE Rural')].cantidad", contains(6)));
+        mvc.perform(as(adminEscuela, get("/api/asignaciones-docentes/reporte-carga-docente")))
+                .andExpect(jsonPath("$[0].categoria", containsString("Profe")))
+                .andExpect(jsonPath("$[0].cantidad").value(2));
+        mvc.perform(as(adminEscuela, get("/api/cursos/reporte-sin-docente/" + periodo)))
                 .andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].nombre").value("Arte"));
-        mvc.perform(as(adminEscuela, get("/api/reportes/cursos-sin-docente/99999"))).andExpect(status().isNotFound());
-        mvc.perform(as(especialista, get("/api/reportes/cursos-sin-material")))
+        mvc.perform(as(adminEscuela, get("/api/cursos/reporte-sin-docente/99999"))).andExpect(status().isNotFound());
+        mvc.perform(as(especialista, get("/api/cursos/reporte-sin-material")))
                 .andExpect(jsonPath("$[*].nombre", containsInAnyOrder("Arte", "Comunicación")));
-        mvc.perform(as(adminEscuela, get("/api/reportes/matriculas-colegio-periodo")))
+        mvc.perform(as(adminEscuela, get("/api/colegios/reporte-matriculas")))
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].colegio").value("IE Rural"))
-                .andExpect(jsonPath("$[0].alumnosMatriculados").value(2));
-        mvc.perform(as(especialista, get("/api/reportes/carga-docente"))).andExpect(status().isForbidden());
+                .andExpect(jsonPath("$[0].categoria", containsString("IE Rural")))
+                .andExpect(jsonPath("$[0].cantidad").value(2));
+        mvc.perform(as(especialista, get("/api/asignaciones-docentes/reporte-carga-docente"))).andExpect(status().isForbidden());
         // H1.1: las dos escuelas acaban de tener actividad → no están inactivas; la consulta funciona
-        mvc.perform(as(adminEscuela, get("/api/reportes/escuelas-inactivas")))
+        mvc.perform(as(adminEscuela, get("/api/colegios/reporte-inactivos")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].colegio", not(hasItem("IE Rural"))));
-        mvc.perform(as(adminEscuela, get("/api/reportes/escuelas-inactivas?dias=0"))).andExpect(status().isBadRequest());
-        mvc.perform(as(especialista, get("/api/reportes/escuelas-inactivas"))).andExpect(status().isForbidden());
+                .andExpect(jsonPath("$[*].nombre", not(hasItem("IE Rural"))));
+        mvc.perform(as(adminEscuela, get("/api/colegios/reporte-inactivos?dias=0"))).andExpect(status().isBadRequest());
+        mvc.perform(as(especialista, get("/api/colegios/reporte-inactivos"))).andExpect(status().isForbidden());
     }
 }

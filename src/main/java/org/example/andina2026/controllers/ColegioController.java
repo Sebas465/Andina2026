@@ -9,6 +9,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.example.andina2026.dtos.ColegioDTOInsert;
 import org.example.andina2026.dtos.ColegioDTOList;
 import org.example.andina2026.entities.Colegio;
+import org.example.andina2026.dtos.RendimientoColegioDTO;
+import org.example.andina2026.dtos.ReporteAgrupadoDTO;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
 import org.example.andina2026.serviceinterfaces.AuditoriaServiceInterface;
@@ -93,6 +97,73 @@ public class ColegioController {
     private Colegio buscar(Long id) {
         return service.listId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + id));
+    }
+
+
+    // ---------------------------------------------------------------- reportes
+
+    /** Nota mínima aprobatoria (escala vigesimal). */
+    private static final double NOTA_MINIMA = 11.0;
+
+    /** H1.1: escuelas sin actividad (cambios o matrículas) en los últimos N días. */
+    @GetMapping("/reporte-inactivos")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<List<ColegioDTOList>> reporteInactivos(@RequestParam(defaultValue = "30") int dias) {
+        if (dias < 1 || dias > 3650) {
+            throw new IllegalArgumentException("dias debe estar entre 1 y 3650");
+        }
+
+        List<ColegioDTOList> lista = service.escuelasInactivas(LocalDateTime.now().minusDays(dias))
+                .stream()
+                .map(x -> modelMapper.map(x, ColegioDTOList.class))
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    /** ¿Qué colegio necesita más recursos? Promedio y % de desaprobados por colegio. */
+    @GetMapping("/reporte-rendimiento")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
+    public ResponseEntity<List<RendimientoColegioDTO>> reporteRendimiento() {
+
+        List<RendimientoColegioDTO> lista = service.rendimientoPorColegio(NOTA_MINIMA)
+                .stream()
+                .map(item -> {
+                    RendimientoColegioDTO dto = new RendimientoColegioDTO();
+
+                    dto.setIdColegio(((Number) item[0]).longValue());
+                    dto.setColegio((String) item[1]);
+                    dto.setTipoZona((String) item[2]);
+                    dto.setAlumnosEvaluados(((Number) item[3]).longValue());
+                    dto.setPromedio(new BigDecimal(item[4].toString()));
+                    dto.setDesaprobados(((Number) item[5]).longValue());
+                    dto.setPorcentajeDesaprobados(new BigDecimal(item[6].toString()));
+
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    /** ¿Cuánta demanda tiene cada colegio por periodo? Alumnos distintos matriculados. */
+    @GetMapping("/reporte-matriculas")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<List<ReporteAgrupadoDTO>> reporteMatriculas() {
+
+        List<ReporteAgrupadoDTO> lista = service.matriculasPorColegioYPeriodo()
+                .stream()
+                .map(item -> {
+                    ReporteAgrupadoDTO dto = new ReporteAgrupadoDTO();
+
+                    dto.setCategoria((String) item[0]);
+                    dto.setCantidad(((Number) item[1]).intValue());
+
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
     }
 
 }
