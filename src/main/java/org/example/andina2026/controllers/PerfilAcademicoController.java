@@ -46,7 +46,7 @@ public class PerfilAcademicoController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<PerfilAcademicoDTOInsert> buscarPorId(@PathVariable Long id) {
         PerfilAcademico e = buscar(id);
         return ResponseEntity.ok(toDetail(e));

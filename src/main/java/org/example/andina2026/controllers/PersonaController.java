@@ -50,7 +50,7 @@ public class PersonaController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<PersonaDTOInsert> buscarPorId(@PathVariable Long id) {
         Persona e = buscar(id);
         return ResponseEntity.ok(toDetail(e));

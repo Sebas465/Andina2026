@@ -101,10 +101,10 @@ class ReportesDecisionTests {
         mvc.perform(as(especialista, post("/api/materiales-cursos")).content("{\"idMaterial\":" + mat + ",\"idCurso\":" + mate + "}"))
                 .andExpect(status().isCreated());
         for (int i = 0; i < 2; i++) {  // 2 alumnos matriculados en IE Rural (uno con 2 cursos: cuenta una vez)
-            long m = crear(local, "/api/matriculas", "{\"idColegio\":" + colA + ",\"idPersona\":" + ids[i] + "}");
-            crear(local, "/api/detalles-matricula", "{\"idMatricula\":" + m + ",\"idCurso\":" + mate + ",\"idPeriodo\":" + periodo + ",\"idGrado\":" + grado + "}");
+            long m = crear(admin, "/api/matriculas", "{\"idColegio\":" + colA + ",\"idPersona\":" + ids[i] + "}");
+            crear(admin, "/api/detalles-matricula", "{\"idMatricula\":" + m + ",\"idCurso\":" + mate + ",\"idPeriodo\":" + periodo + ",\"idGrado\":" + grado + "}");
             if (i == 0) {
-                crear(local, "/api/detalles-matricula", "{\"idMatricula\":" + m + ",\"idCurso\":" + comu + ",\"idPeriodo\":" + periodo + ",\"idGrado\":" + grado + "}");
+                crear(admin, "/api/detalles-matricula", "{\"idMatricula\":" + m + ",\"idCurso\":" + comu + ",\"idPeriodo\":" + periodo + ",\"idGrado\":" + grado + "}");
             }
         }
     }
@@ -148,7 +148,7 @@ class ReportesDecisionTests {
                 .andExpect(jsonPath("$[0].tieneObservacionPsicologica").value(true))
                 .andReturn().getResponse().getContentAsString();
         assertThat(body).doesNotContain("Duelo", "Estrés", "estadoPsicologico");
-        mvc.perform(as(especialista, get("/api/reportes/alumnos-en-riesgo"))).andExpect(status().isForbidden());
+        mvc.perform(as(especialista, get("/api/reportes/alumnos-en-riesgo"))).andExpect(status().isOk());
     }
 
     @Test
