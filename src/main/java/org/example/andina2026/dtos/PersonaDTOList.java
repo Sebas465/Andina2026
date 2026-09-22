@@ -4,9 +4,13 @@ package org.example.andina2026.dtos;
 public class PersonaDTOList {
     private Long idPersona;
 
+    private String codigoEstudiante;
+
     private String nombres;
 
     private String apellidos;
+
+    private String lenguaMaterna;
 
     private String estado;
 
@@ -20,6 +24,14 @@ public class PersonaDTOList {
 
     public void setIdPersona(Long idPersona) {
         this.idPersona = idPersona;
+    }
+
+    public String getCodigoEstudiante() {
+        return codigoEstudiante;
+    }
+
+    public void setCodigoEstudiante(String codigoEstudiante) {
+        this.codigoEstudiante = codigoEstudiante;
     }
 
     public String getNombres() {
@@ -36,6 +48,14 @@ public class PersonaDTOList {
 
     public void setApellidos(String apellidos) {
         this.apellidos = apellidos;
+    }
+
+    public String getLenguaMaterna() {
+        return lenguaMaterna;
+    }
+
+    public void setLenguaMaterna(String lenguaMaterna) {
+        this.lenguaMaterna = lenguaMaterna;
     }
 
     public String getEstado() {

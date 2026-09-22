@@ -5,6 +5,11 @@ import jakarta.validation.constraints.*;
 public class ColegioDTOInsert {
     private Long idColegio;
 
+    @NotBlank(message = "codigoModular es obligatorio")
+    @Size(max = 7, message = "codigoModular admite como máximo 7 caracteres")
+    @Pattern(regexp = "\\d{7}", message = "codigoModular debe tener 7 dígitos (código modular MINEDU)")
+    private String codigoModular;
+
     @NotBlank(message = "nombre es obligatorio")
     @Size(max = 200, message = "nombre admite como máximo 200 caracteres")
     private String nombre;
@@ -35,6 +40,14 @@ public class ColegioDTOInsert {
 
     public void setIdColegio(Long idColegio) {
         this.idColegio = idColegio;
+    }
+
+    public String getCodigoModular() {
+        return codigoModular;
+    }
+
+    public void setCodigoModular(String codigoModular) {
+        this.codigoModular = codigoModular;
     }
 
     public String getNombre() {

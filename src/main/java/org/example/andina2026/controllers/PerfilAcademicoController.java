@@ -12,25 +12,31 @@ import org.example.andina2026.entities.PerfilAcademico;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.PerfilAcademicoServiceInterface;
 import org.example.andina2026.serviceinterfaces.PersonaServiceInterface;
+import org.example.andina2026.serviceinterfaces.AuditoriaServiceInterface;
+import org.example.andina2026.entities.Persona;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/perfiles-academicos")
 public class PerfilAcademicoController {
     private final PerfilAcademicoServiceInterface service;
     private final PersonaServiceInterface personaService;
+    private final AuditoriaServiceInterface auditoria;
     private final ModelMapper MM;
 
-    public PerfilAcademicoController(PerfilAcademicoServiceInterface service, PersonaServiceInterface personaService, ModelMapper MM) {
+    public PerfilAcademicoController(PerfilAcademicoServiceInterface service, PersonaServiceInterface personaService, AuditoriaServiceInterface auditoria, ModelMapper MM) {
         this.service = service;
         this.personaService = personaService;
+        this.auditoria = auditoria;
         this.MM = MM;
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','PSICOLOGO','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<List<PerfilAcademicoDTOList>> listar() {
         List<PerfilAcademicoDTOList> lista = service.list()
                 .stream()
@@ -40,20 +46,21 @@ public class PerfilAcademicoController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','PSICOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<PerfilAcademicoDTOInsert> buscarPorId(@PathVariable Long id) {
         PerfilAcademico e = buscar(id);
         return ResponseEntity.ok(toDetail(e));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','PSICOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<PerfilAcademicoDTOInsert> registrar(@Valid @RequestBody PerfilAcademicoDTOInsert dto) {
         PerfilAcademico e = MM.map(dto, PerfilAcademico.class);
         e.setIdPerfilAcademico(null);
         e.setPersona(personaService.listId(dto.getIdPersona())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Persona con id: " + dto.getIdPersona())));
         service.insert(e);
+        auditoria.registrar("PerfilAcademico", e.getIdPerfilAcademico(), "CREAR", "Registro creado");
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -63,21 +70,28 @@ public class PerfilAcademicoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','PSICOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<PerfilAcademicoDTOInsert> modificar(@PathVariable Long id, @Valid @RequestBody PerfilAcademicoDTOInsert dto) {
-        buscar(id);
+        PerfilAcademico anterior = buscar(id);
         PerfilAcademico e = MM.map(dto, PerfilAcademico.class);
         e.setIdPerfilAcademico(id);
         e.setPersona(personaService.listId(dto.getIdPersona())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Persona con id: " + dto.getIdPersona())));
+        List<String> cambios = new ArrayList<>();
+        if (!Objects.equals(anterior.getDetalles(), e.getDetalles())) cambios.add("detalles");
+        if (!Objects.equals(anterior.getNotas(), e.getNotas())) cambios.add("notas");
+        if (!Objects.equals(anterior.getEstadoPsicologico(), e.getEstadoPsicologico())) cambios.add("estadoPsicologico");
+        if (!Objects.equals(idDe(anterior.getPersona()), idDe(e.getPersona()))) cambios.add("idPersona");
         service.update(e);
+        auditoria.registrar("PerfilAcademico", id, "MODIFICAR", cambios.isEmpty() ? "Sin cambios" : "Campos modificados: " + String.join(", ", cambios));
         return ResponseEntity.ok(toDetail(e));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','PSICOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         service.delete(buscar(id).getIdPerfilAcademico());
+        auditoria.registrar("PerfilAcademico", id, "ELIMINAR", "Registro eliminado");
         return ResponseEntity.noContent().build();
     }
 
@@ -85,6 +99,11 @@ public class PerfilAcademicoController {
         return service.listId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe PerfilAcademico con id: " + id));
     }
+
+    private static Long idDe(Persona x) {
+        return x == null ? null : x.getIdPersona();
+    }
+
 
     private PerfilAcademicoDTOList toList(PerfilAcademico e) {
         PerfilAcademicoDTOList dto = MM.map(e, PerfilAcademicoDTOList.class);

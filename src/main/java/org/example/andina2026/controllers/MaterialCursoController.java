@@ -43,7 +43,7 @@ public class MaterialCursoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<MaterialCursoDTO> registrar(@Valid @RequestBody MaterialCursoDTO dto) {
         Material material = materialService.listId(dto.getIdMaterial())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Material con id: " + dto.getIdMaterial()));
@@ -59,7 +59,7 @@ public class MaterialCursoController {
     }
 
     @DeleteMapping("/{idMaterial}/{idCurso}")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<Void> eliminar(@PathVariable Long idMaterial, @PathVariable Long idCurso) {
         MaterialCursoId id = new MaterialCursoId(idMaterial, idCurso);
         service.listId(id)

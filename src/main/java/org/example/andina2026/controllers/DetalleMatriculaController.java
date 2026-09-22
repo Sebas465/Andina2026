@@ -15,9 +15,16 @@ import org.example.andina2026.serviceinterfaces.CursoServiceInterface;
 import org.example.andina2026.serviceinterfaces.GradoServiceInterface;
 import org.example.andina2026.serviceinterfaces.MatriculaServiceInterface;
 import org.example.andina2026.serviceinterfaces.PeriodoAcademicoServiceInterface;
+import org.example.andina2026.serviceinterfaces.AuditoriaServiceInterface;
+import org.example.andina2026.entities.Curso;
+import org.example.andina2026.entities.Grado;
+import org.example.andina2026.entities.Matricula;
+import org.example.andina2026.entities.PeriodoAcademico;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/detalles-matricula")
@@ -27,19 +34,21 @@ public class DetalleMatriculaController {
     private final GradoServiceInterface gradoService;
     private final MatriculaServiceInterface matriculaService;
     private final PeriodoAcademicoServiceInterface periodoAcademicoService;
+    private final AuditoriaServiceInterface auditoria;
     private final ModelMapper MM;
 
-    public DetalleMatriculaController(DetalleMatriculaServiceInterface service, CursoServiceInterface cursoService, GradoServiceInterface gradoService, MatriculaServiceInterface matriculaService, PeriodoAcademicoServiceInterface periodoAcademicoService, ModelMapper MM) {
+    public DetalleMatriculaController(DetalleMatriculaServiceInterface service, CursoServiceInterface cursoService, GradoServiceInterface gradoService, MatriculaServiceInterface matriculaService, PeriodoAcademicoServiceInterface periodoAcademicoService, AuditoriaServiceInterface auditoria, ModelMapper MM) {
         this.service = service;
         this.cursoService = cursoService;
         this.gradoService = gradoService;
         this.matriculaService = matriculaService;
         this.periodoAcademicoService = periodoAcademicoService;
+        this.auditoria = auditoria;
         this.MM = MM;
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<List<DetalleMatriculaDTOList>> listar() {
         List<DetalleMatriculaDTOList> lista = service.list()
                 .stream()
@@ -49,14 +58,14 @@ public class DetalleMatriculaController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<DetalleMatriculaDTOList> buscarPorId(@PathVariable Long id) {
         DetalleMatricula e = buscar(id);
         return ResponseEntity.ok(toList(e));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<DetalleMatriculaDTOList> registrar(@Valid @RequestBody DetalleMatriculaDTOInsert dto) {
         DetalleMatricula e = MM.map(dto, DetalleMatricula.class);
         e.setIdDetalleMatricula(null);
@@ -69,6 +78,7 @@ public class DetalleMatriculaController {
         e.setGrado(gradoService.listId(dto.getIdGrado())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Grado con id: " + dto.getIdGrado())));
         service.insert(e);
+        auditoria.registrar("DetalleMatricula", e.getIdDetalleMatricula(), "CREAR", "Registro creado");
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -78,9 +88,9 @@ public class DetalleMatriculaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<DetalleMatriculaDTOList> modificar(@PathVariable Long id, @Valid @RequestBody DetalleMatriculaDTOInsert dto) {
-        buscar(id);
+        DetalleMatricula anterior = buscar(id);
         DetalleMatricula e = MM.map(dto, DetalleMatricula.class);
         e.setIdDetalleMatricula(id);
         e.setMatricula(matriculaService.listId(dto.getIdMatricula())
@@ -91,14 +101,23 @@ public class DetalleMatriculaController {
                 .orElseThrow(() -> new ResourceNotFoundException("No existe PeriodoAcademico con id: " + dto.getIdPeriodo())));
         e.setGrado(gradoService.listId(dto.getIdGrado())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Grado con id: " + dto.getIdGrado())));
+        List<String> cambios = new ArrayList<>();
+        if (!Objects.equals(anterior.getFechaMatricula(), e.getFechaMatricula())) cambios.add("fechaMatricula");
+        if (!Objects.equals(anterior.getEstado(), e.getEstado())) cambios.add("estado");
+        if (!Objects.equals(idDe(anterior.getMatricula()), idDe(e.getMatricula()))) cambios.add("idMatricula");
+        if (!Objects.equals(idDe(anterior.getCurso()), idDe(e.getCurso()))) cambios.add("idCurso");
+        if (!Objects.equals(idDe(anterior.getPeriodo()), idDe(e.getPeriodo()))) cambios.add("idPeriodo");
+        if (!Objects.equals(idDe(anterior.getGrado()), idDe(e.getGrado()))) cambios.add("idGrado");
         service.update(e);
+        auditoria.registrar("DetalleMatricula", id, "MODIFICAR", cambios.isEmpty() ? "Sin cambios" : "Campos modificados: " + String.join(", ", cambios));
         return ResponseEntity.ok(toList(e));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         service.delete(buscar(id).getIdDetalleMatricula());
+        auditoria.registrar("DetalleMatricula", id, "ELIMINAR", "Registro eliminado");
         return ResponseEntity.noContent().build();
     }
 
@@ -106,6 +125,23 @@ public class DetalleMatriculaController {
         return service.listId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe DetalleMatricula con id: " + id));
     }
+
+    private static Long idDe(Curso x) {
+        return x == null ? null : x.getIdCurso();
+    }
+
+    private static Long idDe(Grado x) {
+        return x == null ? null : x.getIdGrado();
+    }
+
+    private static Long idDe(Matricula x) {
+        return x == null ? null : x.getIdMatricula();
+    }
+
+    private static Long idDe(PeriodoAcademico x) {
+        return x == null ? null : x.getIdPeriodo();
+    }
+
 
     private DetalleMatriculaDTOList toList(DetalleMatricula e) {
         DetalleMatriculaDTOList dto = MM.map(e, DetalleMatriculaDTOList.class);

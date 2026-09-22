@@ -5,7 +5,8 @@ import org.example.andina2026.dtos.*;
 import java.util.List;
 
 public interface ReporteServiceInterface {
-    public List<AlumnoRendimientoDTO> alumnosConMenorPromedio(int limite);
+    public List<AlumnoRendimientoDTO> alumnosConMenorPromedio(int limite, String lengua, Long idGrado);
+    public List<EscuelaInactivaDTO> escuelasInactivas(int dias);
     public List<AlumnoRiesgoDTO> alumnosEnRiesgo();
     public List<RendimientoColegioDTO> rendimientoPorColegio();
     public List<OcupacionAulaDTO> ocupacionDeAulas();

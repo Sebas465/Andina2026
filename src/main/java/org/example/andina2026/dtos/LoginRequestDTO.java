@@ -1,19 +1,19 @@
 package org.example.andina2026.dtos;
 
+/** H2.1: inicio de sesión con DNI y contraseña. */
 public class LoginRequestDTO {
-    private String username;
-
+    private String dni;
     private String password;
 
     public LoginRequestDTO() {
     }
 
-    public String getUsername() {
-        return username;
+    public String getDni() {
+        return dni;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
     public String getPassword() {
@@ -24,4 +24,3 @@ public class LoginRequestDTO {
         this.password = password;
     }
 }
-

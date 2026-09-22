@@ -15,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.List;
+import java.util.Map;
+
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -63,25 +66,31 @@ public class SecurityConfig {
                         )
                 )
 
-                .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(auth -> {
+                    // Login público
+                    auth.requestMatchers("/login").permitAll();
 
-                        // Login público
-                        .requestMatchers("/login").permitAll()
+                    // Swagger
+                    auth.requestMatchers(
+                            "/swagger-ui/**",
+                            "/swagger-ui.html",
+                            "/v3/api-docs/**"
+                    ).permitAll();
 
-                        // Swagger
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**"
-                        ).permitAll()
+                    // CORS
+                    auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
-                        // CORS
-                        .requestMatchers(HttpMethod.OPTIONS, "/**")
-                        .permitAll()
+                    // Escrituras: el rol se comprueba aquí, antes de leer el cuerpo de la petición
+                    // (así quien no tiene permiso recibe 403 y no un 400 de validación)
+                    for (Map.Entry<String, String[]> regla : ReglasEscritura.ROLES.entrySet()) {
+                        for (HttpMethod metodo : List.of(HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE)) {
+                            auth.requestMatchers(metodo, regla.getKey(), regla.getKey() + "/**").hasAnyRole(regla.getValue());
+                        }
+                    }
 
-                        // Todo lo demás requiere autenticación
-                        .anyRequest().authenticated()
-                )
+                    // Todo lo demás requiere autenticación (y @PreAuthorize en cada método)
+                    auth.anyRequest().authenticated();
+                })
 
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->

@@ -5,6 +5,7 @@ import java.util.List;
 /** Para listas y respuestas: sin contraseña ni hash. */
 public class UsersDTOList {
     private Long id;
+    private String dni;
     private String username;
     private Boolean enabled;
     private List<String> roles;
@@ -15,6 +16,14 @@ public class UsersDTOList {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
     public String getUsername() {

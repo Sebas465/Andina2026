@@ -44,17 +44,17 @@ public class LoginController {
             authentication =
                     authenticationManager.authenticate(
                             new UsernamePasswordAuthenticationToken(
-                                    request.getUsername(),
+                                    request.getDni(),
                                     request.getPassword()
                             )
                     );
         } catch (AuthenticationException ex) {
             // Log de seguridad (H2.1): usuario, IP y motivo; la contraseña nunca se registra
-            securityLog.warn("LOGIN FALLIDO usuario='{}' ip={} motivo={}", request.getUsername(), http.getRemoteAddr(),
+            securityLog.warn("LOGIN FALLIDO dni='{}' ip={} motivo={}", request.getDni(), http.getRemoteAddr(),
                     ex.getClass().getSimpleName());
             throw ex;
         }
-        securityLog.info("LOGIN OK usuario='{}' ip={}", request.getUsername(), http.getRemoteAddr());
+        securityLog.info("LOGIN OK dni='{}' ip={}", request.getDni(), http.getRemoteAddr());
 
         UserDetails userDetails =
                 (UserDetails) authentication.getPrincipal();
