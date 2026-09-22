@@ -1,14 +1,13 @@
 package org.example.andina2026.dtos;
 
 public class AulaDTOList {
-
     private Long idAula;
 
     private String nombre;
 
     private String seccion;
 
-    private int capacidad;
+    private Integer capacidad;
 
     private Long idColegio;
 
@@ -36,11 +35,11 @@ public class AulaDTOList {
         this.seccion = seccion;
     }
 
-    public int getCapacidad() {
+    public Integer getCapacidad() {
         return capacidad;
     }
 
-    public void setCapacidad(int capacidad) {
+    public void setCapacidad(Integer capacidad) {
         this.capacidad = capacidad;
     }
 

@@ -7,46 +7,31 @@ import jakarta.persistence.*;
 public class Aula {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_aula")
     private Long idAula;
 
-    @Column(name = "nombre", length = 30, nullable = false)
+    @Column(name = "nombre", length = 80, nullable = false)
     private String nombre;
 
-    @Column(name = "seccion", length = 30, nullable = false)
+    @Column(name = "seccion", length = 20, nullable = false)
     private String seccion;
 
-    @Column(name = "capacidad", length = 30, nullable = false)
-    private int capacidad;
+    @Column(name = "capacidad", nullable = false)
+    private Integer capacidad;
 
     @ManyToOne
-    @JoinColumn(name = "idColegio",nullable = false)
+    @JoinColumn(name = "id_colegio", nullable = false)
     private Colegio colegio;
 
     public Aula() {
     }
 
-    public Colegio getColegio() {
-        return colegio;
+    public Long getIdAula() {
+        return idAula;
     }
 
-    public void setColegio(Colegio colegio) {
-        this.colegio = colegio;
-    }
-
-    public int getCapacidad() {
-        return capacidad;
-    }
-
-    public void setCapacidad(int capacidad) {
-        this.capacidad = capacidad;
-    }
-
-    public String getSeccion() {
-        return seccion;
-    }
-
-    public void setSeccion(String seccion) {
-        this.seccion = seccion;
+    public void setIdAula(Long idAula) {
+        this.idAula = idAula;
     }
 
     public String getNombre() {
@@ -57,11 +42,27 @@ public class Aula {
         this.nombre = nombre;
     }
 
-    public Long getIdAula() {
-        return idAula;
+    public String getSeccion() {
+        return seccion;
     }
 
-    public void setIdAula(Long idAula) {
-        this.idAula = idAula;
+    public void setSeccion(String seccion) {
+        this.seccion = seccion;
+    }
+
+    public Integer getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(Integer capacidad) {
+        this.capacidad = capacidad;
+    }
+
+    public Colegio getColegio() {
+        return colegio;
+    }
+
+    public void setColegio(Colegio colegio) {
+        this.colegio = colegio;
     }
 }
