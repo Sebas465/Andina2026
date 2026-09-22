@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class JwtTokenService {
     private final JwtEncoder jwtEncoder;
 
-    private static final long TOKEN_VALIDITY = 5 * 60 * 60;
+    private static final long TOKEN_VALIDITY = 8 * 60 * 60; // 8 horas (H2.1)
 
     public JwtTokenService(JwtEncoder jwtEncoder) {
         this.jwtEncoder = jwtEncoder;
