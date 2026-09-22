@@ -1,5 +1,7 @@
 package org.example.andina2026.controllers;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,37 @@ public class ReporteController {
             throw new IllegalArgumentException("limite debe estar entre 1 y 100");
         }
         return ResponseEntity.ok(service.alumnosConMenorPromedio(limite));
+    }
+
+    /** H6.2: la misma lista priorizada, exportable a CSV (se abre en Excel con tildes correctas). */
+    @GetMapping(value = "/alumnos-menor-promedio/csv", produces = "text/csv")
+    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE','PSICOLOGO')")
+    public ResponseEntity<String> alumnosConMenorPromedioCsv(@RequestParam(defaultValue = "10") int limite) {
+        List<AlumnoRendimientoDTO> lista = alumnosConMenorPromedio(limite).getBody();
+        StringBuilder csv = new StringBuilder("\uFEFFprioridad,idPersona,nombres,apellidos,aula,colegio,promedio\n");
+        int i = 1;
+        for (AlumnoRendimientoDTO a : lista) {
+            csv.append(i++).append(',').append(a.getIdPersona()).append(',')
+                    .append(celda(a.getNombres())).append(',').append(celda(a.getApellidos())).append(',')
+                    .append(celda(a.getAula())).append(',').append(celda(a.getColegio())).append(',')
+                    .append(a.getPromedio()).append('\n');
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"alumnos_refuerzo.csv\"")
+                .contentType(new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8))
+                .body(csv.toString());
+    }
+
+    /** Celda CSV segura: comillas escapadas y sin fórmulas (evita inyección CSV en Excel). */
+    private static String celda(String v) {
+        if (v == null) {
+            return "";
+        }
+        String s = v;
+        if (!s.isEmpty() && "=+-@".indexOf(s.charAt(0)) >= 0) {
+            s = "'" + s;
+        }
+        return "\"" + s.replace("\"", "\"\"") + "\"";
     }
 
     @GetMapping("/alumnos-en-riesgo")
