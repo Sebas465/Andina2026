@@ -68,8 +68,15 @@ Cada uno tiene `GET` lista, `GET /{id}`, `POST`, `PUT /{id}` y `DELETE /{id}`.
 
 ## Cambios para cumplir el Word (Trabajo Parcial)
 
-Se añadieron al ERD: `colegios.codigo_modular`, `aulas.computadoras/proyectores/conexion_mbps`, tabla `aula_grado`,
-`personas.lengua_materna` y `personas.codigo_estudiante`, `users.dni` y la tabla `auditoria`. Pendiente del Word
+**Cambios al ERD (modelo de negocio)** — solo estos van al diagrama:
+`colegios.codigo_modular`, `aulas.computadoras` / `proyectores` / `conexion_mbps`, la tabla intermedia `aula_grado`
+(aula ↔ grados atendidos), `personas.lengua_materna` y `personas.codigo_estudiante`.
+
+**Tablas de la capa de seguridad y técnicas (NO van en el ERD):** `users` (con `dni`), `roles` y `auditoria`.
+No son parte del modelo de negocio: las usa el código (Spring Security en `securities/` para el login con JWT, y el
+registro de cambios) y JPA las crea solo al arrancar, igual que en `demoSM2_seguridad`.
+
+Pendiente del Word
 (no incluido en este avance): recuperación de contraseña por correo, envío automático de reportes por correo y los
 épicos 3, 4 y 5 (videoconferencia, IA de ejercicios, sesiones), que necesitan tablas nuevas en el ERD.
 
@@ -79,8 +86,9 @@ Se añadieron al ERD: `colegios.codigo_modular`, `aulas.computadoras/proyectores
   `Detalle` → VARCHAR(100); `Detalles` y `Estado Psicologico` → TEXT; **`Notas` → DECIMAL(4,2)** (promedio 0–20,
   necesario para los rankings; aprobado desde 11).
 - `ASIGNACION_DOCENTE.id_aula` no tenía relación dibujada: se enlazó con AULA.
-- La tabla «Rol» del ERD (tipo de persona) es la entidad `Rol` en `roles_persona`; las cuentas de acceso usan
-  `Users` / `Role` (tablas `users` / `roles`), igual que la demo.
+- La tabla «Rol» del ERD (tipo de persona: alumno, docente…) es la entidad `Rol` en `roles_persona` y SÍ es del
+  modelo. Los roles de acceso (ESPECIALISTA, LOCAL, ADMIN_ESCUELA, ADMIN) son de seguridad: viven en `Users` / `Role`
+  (tablas `users` / `roles`), fuera del ERD, igual que en la demo.
 - Correcciones al código existente: `@NotBlank` en campos numéricos (daba error 500), el aula no guardaba su
   colegio, longitudes de columna según el ERD y faltaba `spring-boot-starter-validation` (las validaciones no se
   aplicaban).
