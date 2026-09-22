@@ -1,17 +1,17 @@
 package org.example.andina2026.controllers;
 
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.example.andina2026.dtos.AulaDTOInsert;
 import org.example.andina2026.dtos.AulaDTOList;
 import org.example.andina2026.entities.Aula;
-import org.example.andina2026.entities.Colegio;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.AulaServiceInterface;
 import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -19,67 +19,76 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/aula")
 public class AulaController {
-
-    private final AulaServiceInterface ASI;
+    private final AulaServiceInterface service;
+    private final ColegioServiceInterface colegioService;
     private final ModelMapper MM;
-    private final ColegioServiceInterface CSI;
 
-    public AulaController(AulaServiceInterface ASI, ModelMapper MM, ColegioServiceInterface CSI) {
-        this.ASI = ASI;
+    public AulaController(AulaServiceInterface service, ColegioServiceInterface colegioService, ModelMapper MM) {
+        this.service = service;
+        this.colegioService = colegioService;
         this.MM = MM;
-        this.CSI = CSI;
     }
 
     @GetMapping
-    public ResponseEntity<List<AulaDTOList>> listar(){
-        List<AulaDTOList> lista=ASI.list()
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<AulaDTOList>> listar() {
+        List<AulaDTOList> lista = service.list()
                 .stream()
-                .map(m->MM.map(m,AulaDTOList.class))
+                .map(e -> toList(e))
                 .toList();
-
         return ResponseEntity.ok(lista);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<AulaDTOList> buscarPorId(@PathVariable Long id) {
+        Aula e = buscar(id);
+        return ResponseEntity.ok(toList(e));
+    }
+
     @PostMapping
-    public ResponseEntity<AulaDTOInsert> registrar(@Valid @RequestBody AulaDTOInsert dto){
-        Colegio st=CSI.listId(dto.getIdColegio())
-                .orElseThrow(()->
-                        new ResourceNotFoundException(
-                                "No existe el Colegio"+dto.getIdColegio()
-                        ));
-        Aula mv=MM.map(dto, Aula.class);
-        mv.setIdAula(mv.getIdAula());
-        ASI.insert(mv);
-        AulaDTOInsert responseDTO=MM.map(mv,AulaDTOInsert.class);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AulaDTOList> registrar(@Valid @RequestBody AulaDTOInsert dto) {
+        Aula e = MM.map(dto, Aula.class);
+        e.setIdAula(null);
+        e.setColegio(colegioService.listId(dto.getIdColegio())
+                .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + dto.getIdColegio())));
+        service.insert(e);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(mv.getIdAula())
+                .buildAndExpand(e.getIdAula())
                 .toUri();
-
-        return ResponseEntity.created(location).body(responseDTO) ;
+        return ResponseEntity.created(location).body(toList(e));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AulaDTOList>buscarid(@PathVariable Long id){
-        Aula movie=ASI.listId(id)
-                .orElseThrow(()->
-                        new ResourceNotFoundException(
-                                "No existe el aula: "+id
-                        ));
-        AulaDTOList respondeDTO=MM.map(movie,AulaDTOList.class);
-        return ResponseEntity.ok(respondeDTO);
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AulaDTOList> modificar(@PathVariable Long id, @Valid @RequestBody AulaDTOInsert dto) {
+        buscar(id);
+        Aula e = MM.map(dto, Aula.class);
+        e.setIdAula(id);
+        e.setColegio(colegioService.listId(dto.getIdColegio())
+                .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + dto.getIdColegio())));
+        service.update(e);
+        return ResponseEntity.ok(toList(e));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void>eliminar(@PathVariable Long id){
-        Aula movie=ASI.listId(id)
-                .orElseThrow(()->
-                        new ResourceNotFoundException(
-                                "No existe el aula: "+id
-                        ));
-        ASI.delete(movie.getIdAula());
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        service.delete(buscar(id).getIdAula());
         return ResponseEntity.noContent().build();
     }
 
+    private Aula buscar(Long id) {
+        return service.listId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe Aula con id: " + id));
+    }
+
+    private AulaDTOList toList(Aula e) {
+        AulaDTOList dto = MM.map(e, AulaDTOList.class);
+        dto.setIdColegio(e.getColegio() != null ? e.getColegio().getIdColegio() : null);
+        return dto;
+    }
 }

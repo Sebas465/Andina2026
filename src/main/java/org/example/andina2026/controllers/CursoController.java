@@ -6,30 +6,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.example.andina2026.dtos.ColegioDTOInsert;
-import org.example.andina2026.dtos.ColegioDTOList;
-import org.example.andina2026.entities.Colegio;
+import org.example.andina2026.dtos.CursoDTOInsert;
+import org.example.andina2026.dtos.CursoDTOList;
+import org.example.andina2026.entities.Curso;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
-import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
+import org.example.andina2026.serviceinterfaces.CursoServiceInterface;
 
 import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/colegios")
-public class ColegioController {
-    private final ColegioServiceInterface service;
+@RequestMapping("/api/cursos")
+public class CursoController {
+    private final CursoServiceInterface service;
     private final ModelMapper MM;
 
-    public ColegioController(ColegioServiceInterface service, ModelMapper MM) {
+    public CursoController(CursoServiceInterface service, ModelMapper MM) {
         this.service = service;
         this.MM = MM;
     }
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ColegioDTOList>> listar() {
-        List<ColegioDTOList> lista = service.list()
+    public ResponseEntity<List<CursoDTOList>> listar() {
+        List<CursoDTOList> lista = service.list()
                 .stream()
                 .map(e -> toList(e))
                 .toList();
@@ -38,31 +38,31 @@ public class ColegioController {
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ColegioDTOList> buscarPorId(@PathVariable Long id) {
-        Colegio e = buscar(id);
+    public ResponseEntity<CursoDTOList> buscarPorId(@PathVariable Long id) {
+        Curso e = buscar(id);
         return ResponseEntity.ok(toList(e));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ColegioDTOList> registrar(@Valid @RequestBody ColegioDTOInsert dto) {
-        Colegio e = MM.map(dto, Colegio.class);
-        e.setIdColegio(null);
+    public ResponseEntity<CursoDTOList> registrar(@Valid @RequestBody CursoDTOInsert dto) {
+        Curso e = MM.map(dto, Curso.class);
+        e.setIdCurso(null);
         service.insert(e);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(e.getIdColegio())
+                .buildAndExpand(e.getIdCurso())
                 .toUri();
         return ResponseEntity.created(location).body(toList(e));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ColegioDTOList> modificar(@PathVariable Long id, @Valid @RequestBody ColegioDTOInsert dto) {
+    public ResponseEntity<CursoDTOList> modificar(@PathVariable Long id, @Valid @RequestBody CursoDTOInsert dto) {
         buscar(id);
-        Colegio e = MM.map(dto, Colegio.class);
-        e.setIdColegio(id);
+        Curso e = MM.map(dto, Curso.class);
+        e.setIdCurso(id);
         service.update(e);
         return ResponseEntity.ok(toList(e));
     }
@@ -70,17 +70,17 @@ public class ColegioController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        service.delete(buscar(id).getIdColegio());
+        service.delete(buscar(id).getIdCurso());
         return ResponseEntity.noContent().build();
     }
 
-    private Colegio buscar(Long id) {
+    private Curso buscar(Long id) {
         return service.listId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe Curso con id: " + id));
     }
 
-    private ColegioDTOList toList(Colegio e) {
-        ColegioDTOList dto = MM.map(e, ColegioDTOList.class);
+    private CursoDTOList toList(Curso e) {
+        CursoDTOList dto = MM.map(e, CursoDTOList.class);
         return dto;
     }
 }
