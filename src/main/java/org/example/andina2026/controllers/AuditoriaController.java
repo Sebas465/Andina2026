@@ -22,7 +22,7 @@ public class AuditoriaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<List<AuditoriaDTO>> historial(@RequestParam(required = false) String entidad,
                                                      @RequestParam(required = false) Long idRegistro) {
         List<AuditoriaDTO> lista = service.historial(entidad, idRegistro)

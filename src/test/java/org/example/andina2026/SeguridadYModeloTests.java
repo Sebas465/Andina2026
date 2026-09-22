@@ -139,8 +139,8 @@ class SeguridadYModeloTests {
                 "\"correo\":\"rosa@andina.pe\",\"lenguaMaterna\":\"QUECHUA\",\"estado\":\"ACTIVO\",\"idAula\":" + aula + ",\"idRol\":" + rolAlumno + "}");
         periodo = crear(adminEscuela, "/api/periodos", "{\"nombre\":\"2026-I\",\"fechaInicio\":\"2026-03-01\",\"fechaFin\":\"2026-07-31\",\"estado\":\"ABIERTO\"}");
         curso = crear(adminEscuela, "/api/cursos", "{\"nombre\":\"Matemática\",\"descripcion\":\"Números\",\"area\":\"Ciencias\"}");
-        matricula = crear(local, "/api/matriculas", "{\"idColegio\":" + colegio + ",\"idPersona\":" + persona + "}");
-        crear(local, "/api/detalles-matricula", "{\"fechaMatricula\":\"2026-03-01\",\"estado\":\"VIGENTE\",\"idMatricula\":" + matricula +
+        matricula = crear(admin, "/api/matriculas", "{\"idColegio\":" + colegio + ",\"idPersona\":" + persona + "}");
+        crear(admin, "/api/detalles-matricula", "{\"fechaMatricula\":\"2026-03-01\",\"estado\":\"VIGENTE\",\"idMatricula\":" + matricula +
                 ",\"idCurso\":" + curso + ",\"idPeriodo\":" + periodo + ",\"idGrado\":" + grado + "}");
         crear(adminEscuela, "/api/asignaciones-docentes", "{\"modalidad\":\"PRESENCIAL\",\"horasSemanales\":4.5,\"idAula\":" + aula +
                 ",\"idCurso\":" + curso + ",\"idPeriodo\":" + periodo + ",\"idPersona\":" + persona + ",\"idColegio\":" + colegio + "}");
@@ -222,7 +222,7 @@ class SeguridadYModeloTests {
         // H2.2: historial de la ficha del estudiante, sin guardar valores sensibles
         String h = obtener(local, "/api/auditoria?entidad=Persona&idRegistro=" + persona);
         assertThat(h).contains("MODIFICAR", "nombres", "lenguaMaterna", "42345678").doesNotContain("Rosa María", "rosa@andina.pe");
-        mvc.perform(as(especialista, get("/api/auditoria"))).andExpect(status().isForbidden());
+        assertThat(obtener(especialista, "/api/auditoria?entidad=Persona&idRegistro=" + persona)).contains("MODIFICAR");
     }
 
     @Test
@@ -231,12 +231,12 @@ class SeguridadYModeloTests {
         String personas = obtener(especialista, "/api/personas");
         assertThat(personas).contains("Rosa").doesNotContain("rosa@andina.pe", "correo", "fechaNacimiento");
         assertThat(obtener(local, "/api/personas/" + persona)).contains("rosa@andina.pe");
-        mvc.perform(as(especialista, get("/api/personas/" + persona))).andExpect(status().isForbidden());
+        assertThat(obtener(especialista, "/api/personas/" + persona)).contains("rosa@andina.pe"); // el especialista ve al alumno
 
         String perfiles = obtener(especialista, "/api/perfiles-academicos");
         assertThat(perfiles).contains("Participa en clase")
                 .doesNotContain("15.5", "Ansiedad", "notas", "estadoPsicologico");
-        mvc.perform(as(especialista, get("/api/perfiles-academicos/" + perfil))).andExpect(status().isForbidden());
+        assertThat(obtener(especialista, "/api/perfiles-academicos/" + perfil)).contains("15.5"); // y sus notas
         assertThat(obtener(local, "/api/perfiles-academicos/" + perfil)).contains("Ansiedad leve");
     }
 
@@ -249,6 +249,13 @@ class SeguridadYModeloTests {
         mvc.perform(as(local, delete("/api/colegios/" + colegio))).andExpect(status().isForbidden());
         mvc.perform(as(especialista, delete("/api/personas/" + persona))).andExpect(status().isForbidden());
         mvc.perform(as(especialista, delete("/api/periodos/" + periodo))).andExpect(status().isForbidden());
+        // Solo el ADMIN toca las matrículas (cuerpo válido: así el 403 viene del rol, no de la validación)
+        String matriculaJson = "{\"idColegio\":" + colegio + ",\"idPersona\":" + persona + "}";
+        mvc.perform(as(local, post("/api/matriculas")).content(matriculaJson)).andExpect(status().isForbidden());
+        mvc.perform(as(adminEscuela, post("/api/matriculas")).content(matriculaJson)).andExpect(status().isForbidden());
+        mvc.perform(as(especialista, post("/api/matriculas")).content(matriculaJson)).andExpect(status().isForbidden());
+        mvc.perform(as(local, delete("/api/matriculas/" + matricula))).andExpect(status().isForbidden());
+        mvc.perform(as(adminEscuela, delete("/api/detalles-matricula/" + matricula))).andExpect(status().isForbidden());
     }
 
     @Test

@@ -145,7 +145,7 @@ public class ReporteController {
     }
 
     @GetMapping("/alumnos-en-riesgo")
-    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<List<AlumnoRiesgoDTO>> alumnosEnRiesgo() {
 
         List<AlumnoRiesgoDTO> lista = perfilService.alumnosEnRiesgo(NOTA_MINIMA)

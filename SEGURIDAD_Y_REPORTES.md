@@ -24,18 +24,18 @@ XServiceImplement, XDTOInsert / XDTOList, controllers con ModelMapper, securitie
 | AULA (grados atendidos, equipamiento, capacidad ≤ 40) | `/api/aula` | autenticado | ADMIN |
 | GRADO | `/api/grados` | autenticado | ADMIN |
 | Rol (tipo de persona) | `/api/roles-persona` | autenticado | ADMIN |
-| Persona (lengua materna, edad 12-16, ID anonimizado) | `/api/personas` | personal docente (detalle `/{id}`: ADMIN, ADMIN_ESCUELA, LOCAL) | ADMIN, ADMIN_ESCUELA, LOCAL |
+| Persona (lengua materna, edad 12-16, ID anonimizado) | `/api/personas` | personal docente (también el detalle `/{id}`) | ADMIN, ADMIN_ESCUELA, LOCAL |
 | PERIODO_ACADEMICO | `/api/periodos` | autenticado | ADMIN, ADMIN_ESCUELA |
-| MATRICULA | `/api/matriculas` | personal docente | ADMIN, ADMIN_ESCUELA, LOCAL |
-| Detalle Matricula | `/api/detalles-matricula` | personal docente | ADMIN, ADMIN_ESCUELA, LOCAL |
+| MATRICULA | `/api/matriculas` | personal docente | **solo ADMIN** |
+| Detalle Matricula | `/api/detalles-matricula` | personal docente | **solo ADMIN** |
 | CURSO | `/api/cursos` | autenticado | ADMIN, ADMIN_ESCUELA |
 | ASIGNACION_DOCENTE | `/api/asignaciones-docentes` | autenticado | ADMIN, ADMIN_ESCUELA |
 | MATERIAL | `/api/materiales` | autenticado | personal docente |
 | MATERIAL_CURSO | `/api/materiales-cursos` (borrar: `/{idMaterial}/{idCurso}`) | autenticado | personal docente |
-| Perfil_Academico | `/api/perfiles-academicos` | personal docente (detalle: ADMIN, ADMIN_ESCUELA, LOCAL) | ADMIN, ADMIN_ESCUELA, LOCAL |
-| Historial de cambios | `/api/auditoria?entidad=Persona&idRegistro=…` | ADMIN, ADMIN_ESCUELA, LOCAL | (automático) |
+| Perfil_Academico | `/api/perfiles-academicos` | personal docente (también el detalle con notas) | ADMIN, ADMIN_ESCUELA, LOCAL |
+| Historial de cambios | `/api/auditoria?entidad=Persona&idRegistro=…` | personal docente | (automático) |
 
-«Personal docente» = ADMIN, ADMIN_ESCUELA, ESPECIALISTA y LOCAL. Los permisos se comprueban con `@PreAuthorize`
+«Personal docente» = ADMIN, ADMIN_ESCUELA, ESPECIALISTA y LOCAL. Las matrículas solo las crea, modifica o elimina el ADMIN. Los permisos se comprueban con `@PreAuthorize`
 en cada método (sin permiso → 403), igual que en `demoSM2_seguridad`.
 
 Seguridad igual que la demo (`securities/`: `SecurityConfig`, `JwtConfig`, `JwtTokenService`,
@@ -49,8 +49,8 @@ Cada uno tiene `GET` lista, `GET /{id}`, `POST`, `PUT /{id}` y `DELETE /{id}`.
 
 - **Contraseñas**: se hashean con BCrypt en `UsersController.registrar` (`passwordEncoder.encode`, bean de `SecurityConfig`)
   y solo se guarda el hash; ninguna respuesta las devuelve (`UsersDTOList`).
-- **Persona**: `correo` y `fechaNacimiento` no salen en la lista; solo en el detalle, para ADMIN, ADMIN_ESCUELA y LOCAL.
-- **Perfil académico**: `notas` y `estadoPsicologico` no salen en la lista; el detalle solo para ADMIN, ADMIN_ESCUELA y LOCAL.
+- **Persona**: `correo` y `fechaNacimiento` no salen en la lista; solo en el detalle (personal docente, incluido ESPECIALISTA).
+- **Perfil académico**: `notas` y `estadoPsicologico` no salen en la lista; solo en el detalle (personal docente, incluido ESPECIALISTA).
 - Errores de BD (duplicados, borrar con datos relacionados) → 409 con mensaje genérico, sin detalles internos.
 
 ## Reportes para decidir (`/api/reportes`)
@@ -63,7 +63,7 @@ el repository de su entidad (`IPerfilAcademicoRepository`, `IColegioRepository`,
 |---|---|---|
 | `alumnos-menor-promedio?limite=10&lengua=QUECHUA&idGrado=…` | ¿A quién apoyar primero? (filtros H6.1) | personal docente |
 | `alumnos-menor-promedio/csv` | La misma lista para Excel (H6.2) | personal docente |
-| `alumnos-en-riesgo` | Desaprobado + observación psicológica (sin texto clínico) | ADMIN, ADMIN_ESCUELA, LOCAL |
+| `alumnos-en-riesgo` | Desaprobado + observación psicológica (sin texto clínico) | personal docente |
 | `rendimiento-colegios` | ¿Qué colegio necesita más recursos? | personal docente |
 | `escuelas-inactivas?dias=30` | Escuelas sin cambios ni matrículas en N días (H1.1) | ADMIN, ADMIN_ESCUELA |
 | `ocupacion-aulas` | ¿Abrir secciones o redistribuir? | ADMIN, ADMIN_ESCUELA |

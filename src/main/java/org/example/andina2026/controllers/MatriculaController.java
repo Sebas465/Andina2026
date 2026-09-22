@@ -57,7 +57,7 @@ public class MatriculaController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
+    @PreAuthorize("hasRole('ADMIN')") // solo el ADMIN toca las matrículas
     public ResponseEntity<MatriculaDTOList> registrar(@Valid @RequestBody MatriculaDTOInsert dto) {
         Matricula e = modelMapper.map(dto, Matricula.class);
         e.setIdMatricula(null);
@@ -76,7 +76,7 @@ public class MatriculaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
+    @PreAuthorize("hasRole('ADMIN')") // solo el ADMIN toca las matrículas
     public ResponseEntity<MatriculaDTOList> modificar(@PathVariable Long id, @Valid @RequestBody MatriculaDTOInsert dto) {
         Matricula anterior = buscar(id);
         Matricula e = modelMapper.map(dto, Matricula.class);
@@ -94,7 +94,7 @@ public class MatriculaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
+    @PreAuthorize("hasRole('ADMIN')") // solo el ADMIN toca las matrículas
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         service.delete(buscar(id).getIdMatricula());
         auditoria.registrar("Matricula", id, "ELIMINAR", "Registro eliminado");
