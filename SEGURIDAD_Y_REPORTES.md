@@ -6,13 +6,9 @@ XServiceImplement, XDTOInsert / XDTOList, controllers con ModelMapper, securitie
 ## Arrancar
 
 1. PostgreSQL con la base `Andina2026` (ver `application.properties`). Las tablas se crean solas (`ddl-auto=update`).
-2. Primer arranque: define la contraseña del ADMIN inicial (solo se usa si la tabla `users` está vacía):
-   ```bash
-   export ANDINA_ADMIN_PASSWORD='UnaClaveSegura2026'   # usuario: admin (o ANDINA_ADMIN_USER)
-   export JWT_SECRET='…64+ caracteres…'                  # opcional en desarrollo, obligatorio en producción
-   ```
-   El ADMIN inicial entra con el DNI `00000001` (o `ANDINA_ADMIN_DNI`).
-   En IntelliJ: Run → Edit Configurations → Environment variables.
+2. Carga los usuarios y datos con el script `datos_andina2026.sql` (o `crear_bd_andina2026.sql` en una BD vacía),
+   igual que en `demoSM2_seguridad`: los usuarios se insertan en la BD con su contraseña ya hasheada (BCrypt).
+   El ADMIN entra con el DNI `00000001`.
 3. `POST /login` con `{"dni":"00000001","password":"…"}` → `token` (H2.1: se entra con **DNI**, sesión de 8 horas).
    En Swagger (`/swagger-ui/index.html`) pulsa **Authorize** y pega el token.
 4. Crear cuentas: `POST /api/usuarios` (solo ADMIN) con `{"dni","username","password","roles":["LOCAL"]}`.
@@ -39,8 +35,13 @@ XServiceImplement, XDTOInsert / XDTOList, controllers con ModelMapper, securitie
 | Perfil_Academico | `/api/perfiles-academicos` | personal docente (detalle: ADMIN, ADMIN_ESCUELA, LOCAL) | ADMIN, ADMIN_ESCUELA, LOCAL |
 | Historial de cambios | `/api/auditoria?entidad=Persona&idRegistro=…` | ADMIN, ADMIN_ESCUELA, LOCAL | (automático) |
 
-«Personal docente» = ADMIN, ADMIN_ESCUELA, ESPECIALISTA y LOCAL. Los permisos de escritura se comprueban antes de leer
-la petición (`securities/ReglasEscritura`, generado con el mismo criterio que `@PreAuthorize`): sin permiso → 403.
+«Personal docente» = ADMIN, ADMIN_ESCUELA, ESPECIALISTA y LOCAL. Los permisos se comprueban con `@PreAuthorize`
+en cada método (sin permiso → 403), igual que en `demoSM2_seguridad`.
+
+Seguridad igual que la demo (`securities/`: `SecurityConfig`, `JwtConfig`, `JwtTokenService`,
+`CustomJwtAuthenticationConverter`, `OpenApiConfig`; `LoginController`; `JwtUserDetailsService`). Únicas diferencias,
+porque las pide el Word (H2.1): se inicia sesión con **DNI**, el token dura **8 horas** (en la demo 5) y el login registra
+cada intento (`LOGIN OK` / `LOGIN FALLIDO`).
 
 Cada uno tiene `GET` lista, `GET /{id}`, `POST`, `PUT /{id}` y `DELETE /{id}`.
 

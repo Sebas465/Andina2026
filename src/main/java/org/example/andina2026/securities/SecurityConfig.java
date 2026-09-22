@@ -15,9 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.List;
-import java.util.Map;
-
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -66,31 +63,25 @@ public class SecurityConfig {
                         )
                 )
 
-                .authorizeHttpRequests(auth -> {
-                    // Login público
-                    auth.requestMatchers("/login").permitAll();
+                .authorizeHttpRequests(auth -> auth
 
-                    // Swagger
-                    auth.requestMatchers(
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/v3/api-docs/**"
-                    ).permitAll();
+                        // Login público
+                        .requestMatchers("/login").permitAll()
 
-                    // CORS
-                    auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+                        // Swagger
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
 
-                    // Escrituras: el rol se comprueba aquí, antes de leer el cuerpo de la petición
-                    // (así quien no tiene permiso recibe 403 y no un 400 de validación)
-                    for (Map.Entry<String, String[]> regla : ReglasEscritura.ROLES.entrySet()) {
-                        for (HttpMethod metodo : List.of(HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE)) {
-                            auth.requestMatchers(metodo, regla.getKey(), regla.getKey() + "/**").hasAnyRole(regla.getValue());
-                        }
-                    }
+                        // CORS
+                        .requestMatchers(HttpMethod.OPTIONS, "/**")
+                        .permitAll()
 
-                    // Todo lo demás requiere autenticación (y @PreAuthorize en cada método)
-                    auth.anyRequest().authenticated();
-                })
+                        // Todo lo demás requiere autenticación
+                        .anyRequest().authenticated()
+                )
 
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
