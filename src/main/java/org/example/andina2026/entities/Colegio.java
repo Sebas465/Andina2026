@@ -28,6 +28,16 @@ public class Colegio {
     @Column(name = "tipo_zona", length = 30, nullable = false)
     private String tipo_zona;
 
+    public Colegio(Long idColegio, String nombre, String departamento, String provincia, String distrito, String comunidad, String tipo_zona) {
+        this.idColegio = idColegio;
+        this.nombre = nombre;
+        this.departamento = departamento;
+        this.provincia = provincia;
+        this.distrito = distrito;
+        this.comunidad = comunidad;
+        this.tipo_zona = tipo_zona;
+    }
+
     public Colegio() {
     }
 

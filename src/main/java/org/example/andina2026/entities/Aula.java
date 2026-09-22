@@ -17,7 +17,7 @@ public class Aula {
     private String seccion;
 
     @Column(name = "capacidad", nullable = false)
-    private Integer capacidad;
+    private int capacidad;
 
     @ManyToOne
     @JoinColumn(name = "id_colegio", nullable = false)
@@ -50,11 +50,11 @@ public class Aula {
         this.seccion = seccion;
     }
 
-    public Integer getCapacidad() {
+    public int getCapacidad() {
         return capacidad;
     }
 
-    public void setCapacidad(Integer capacidad) {
+    public void setCapacidad(int capacidad) {
         this.capacidad = capacidad;
     }
 

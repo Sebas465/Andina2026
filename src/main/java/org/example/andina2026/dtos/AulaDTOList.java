@@ -7,7 +7,7 @@ public class AulaDTOList {
 
     private String seccion;
 
-    private Integer capacidad;
+    private int capacidad;
 
     private Long idColegio;
 
@@ -35,11 +35,11 @@ public class AulaDTOList {
         this.seccion = seccion;
     }
 
-    public Integer getCapacidad() {
+    public int getCapacidad() {
         return capacidad;
     }
 
-    public void setCapacidad(Integer capacidad) {
+    public void setCapacidad(int capacidad) {
         this.capacidad = capacidad;
     }
 
