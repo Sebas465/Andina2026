@@ -1,7 +1,9 @@
 package org.example.andina2026.controllers;
 
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,9 +22,13 @@ import java.util.List;
 @PreAuthorize("hasRole('ADMIN')")
 public class UsersController {
     private final UsersServiceInterface service;
+    private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsersController(UsersServiceInterface service) {
+    public UsersController(UsersServiceInterface service, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
         this.service = service;
+        this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
@@ -43,7 +49,9 @@ public class UsersController {
         if (service.existsUsername(dto.getUsername())) {
             throw new IllegalArgumentException("Ya existe el usuario: " + dto.getUsername());
         }
-        Users u = service.insert(dto.getDni(), dto.getUsername(), dto.getPassword(), dto.getRoles(), dto.getEnabled());
+        // HASHEO: la contraseña se convierte en hash BCrypt (PasswordEncoder de SecurityConfig) antes de guardarla
+        String passwordHash = passwordEncoder.encode(dto.getPassword());
+        Users u = service.insert(dto.getDni(), dto.getUsername(), passwordHash, dto.getRoles(), dto.getEnabled());
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -64,11 +72,8 @@ public class UsersController {
     }
 
     private UsersDTOList toList(Users u) {
-        UsersDTOList dto = new UsersDTOList();
-        dto.setId(u.getId());
-        dto.setDni(u.getDni());
-        dto.setUsername(u.getUsername());
-        dto.setEnabled(u.getEnabled());
+        UsersDTOList dto = modelMapper.map(u, UsersDTOList.class);
+        // los roles se guardan como "ROLE_X": en la respuesta se muestran sin el prefijo
         dto.setRoles(u.getRoles().stream().map(r -> r.getRol().replaceFirst("^ROLE_", "")).toList());
         return dto;
     }
