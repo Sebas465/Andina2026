@@ -62,12 +62,12 @@ class ReportesDecisionTests {
     @BeforeAll
     void datos() throws Exception {
         admin = login("admin", "AdminPrueba2026");
-        crear(admin, "/api/usuarios", "{\"username\":\"doc\",\"password\":\"Docente2026\",\"roles\":[\"DOCENTE\"]}");
-        crear(admin, "/api/usuarios", "{\"username\":\"psi\",\"password\":\"Psicologo26\",\"roles\":[\"PSICOLOGO\"]}");
-        crear(admin, "/api/usuarios", "{\"username\":\"alu\",\"password\":\"Alumno2026\",\"roles\":[\"ALUMNO\"]}");
-        docente = login("doc", "Docente2026");
-        psicologo = login("psi", "Psicologo26");
-        alumno = login("alu", "Alumno2026");
+        crear(admin, "/api/usuarios", "{\"username\":\"doc\",\"password\":\"Docente2026!\",\"roles\":[\"DOCENTE\"]}");
+        crear(admin, "/api/usuarios", "{\"username\":\"psi\",\"password\":\"Psicologo26!\",\"roles\":[\"PSICOLOGO\"]}");
+        crear(admin, "/api/usuarios", "{\"username\":\"alu\",\"password\":\"Alumno2026!\",\"roles\":[\"ALUMNO\"]}");
+        docente = login("doc", "Docente2026!");
+        psicologo = login("psi", "Psicologo26!");
+        alumno = login("alu", "Alumno2026!");
 
         colA = crear(admin, "/api/colegios", "{\"nombre\":\"IE Rural\",\"departamento\":\"Puno\",\"provincia\":\"P\",\"distrito\":\"D\",\"comunidad\":\"C\",\"tipo_zona\":\"RURAL\"}");
         colB = crear(admin, "/api/colegios", "{\"nombre\":\"IE Urbana\",\"departamento\":\"Lima\",\"provincia\":\"P\",\"distrito\":\"D\",\"comunidad\":\"C\",\"tipo_zona\":\"URBANA\"}");
@@ -119,6 +119,16 @@ class ReportesDecisionTests {
                 .andExpect(jsonPath("$[*].nombres", not(hasItem("Profe"))))
                 .andExpect(jsonPath("$[*].nombres", not(hasItem("SinNota"))));
         mvc.perform(as(docente, get("/api/reportes/alumnos-menor-promedio?limite=3"))).andExpect(jsonPath("$", hasSize(3)));
+        // H6.2: exportación CSV con cabecera, 3 filas y el peor alumno primero
+        String csv = mvc.perform(as(docente, get("/api/reportes/alumnos-menor-promedio/csv?limite=3")))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", containsString("alumnos_refuerzo.csv")))
+                .andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
+        String[] filas = csv.replace("\uFEFF", "").trim().split("\n");
+        assertThat(filas).hasSize(4);
+        assertThat(filas[0]).isEqualTo("prioridad,idPersona,nombres,apellidos,aula,colegio,promedio");
+        assertThat(filas[1]).startsWith("1,").contains("\"Alumno5\"", "\"IE Rural\"");
+        mvc.perform(as(alumno, get("/api/reportes/alumnos-menor-promedio/csv"))).andExpect(status().isForbidden());
         mvc.perform(as(docente, get("/api/reportes/alumnos-menor-promedio?limite=0"))).andExpect(status().isBadRequest());
         mvc.perform(as(alumno, get("/api/reportes/alumnos-menor-promedio"))).andExpect(status().isForbidden());
     }

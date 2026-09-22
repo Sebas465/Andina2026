@@ -80,24 +80,34 @@ class SeguridadYModeloTests {
     @Order(2)
     void adminCreaUsuariosYLaListaNoTieneContrasenas() throws Exception {
         admin = login("admin", "AdminPrueba2026");
-        crear(admin, "/api/usuarios", "{\"username\":\"docente1\",\"password\":\"Docente2026\",\"roles\":[\"DOCENTE\"]}");
-        crear(admin, "/api/usuarios", "{\"username\":\"psico1\",\"password\":\"Psico20266\",\"roles\":[\"PSICOLOGO\"]}");
-        crear(admin, "/api/usuarios", "{\"username\":\"alumno1\",\"password\":\"Alumno2026\",\"roles\":[\"ALUMNO\"]}");
+        crear(admin, "/api/usuarios", "{\"username\":\"docente1\",\"password\":\"Docente2026!\",\"roles\":[\"DOCENTE\"]}");
+        crear(admin, "/api/usuarios", "{\"username\":\"psico1\",\"password\":\"Psico20266!\",\"roles\":[\"PSICOLOGO\"]}");
+        crear(admin, "/api/usuarios", "{\"username\":\"alumno1\",\"password\":\"Alumno2026!\",\"roles\":[\"ALUMNO\"]}");
         // usuario repetido y rol inventado → 400
         mvc.perform(as(admin, post("/api/usuarios"))
-                        .content("{\"username\":\"docente1\",\"password\":\"OtraClave2026\",\"roles\":[\"DOCENTE\"]}"))
+                        .content("{\"username\":\"docente1\",\"password\":\"OtraClave2026!\",\"roles\":[\"DOCENTE\"]}"))
                 .andExpect(status().isBadRequest());
         mvc.perform(as(admin, post("/api/usuarios"))
-                        .content("{\"username\":\"hacker\",\"password\":\"OtraClave2026\",\"roles\":[\"SUPERUSER\"]}"))
+                        .content("{\"username\":\"hacker\",\"password\":\"OtraClave2026!\",\"roles\":[\"SUPERUSER\"]}"))
                 .andExpect(status().isBadRequest());
+
+        // contraseña débil (sin mayúscula, número o símbolo) → 400, como pide la H2.1
+        mvc.perform(as(admin, post("/api/usuarios"))
+                        .content("{\"username\":\"debil\",\"password\":\"solominusculas\",\"roles\":[\"ALUMNO\"]}"))
+                .andExpect(status().isBadRequest());
+        // el token dura 8 horas (exp - iat = 28800 s)
+        String payload = new String(java.util.Base64.getUrlDecoder().decode(admin.split("\\.")[1]));
+        long iat = Long.parseLong(payload.replaceAll(".*\"iat\":(\\d+).*", "$1"));
+        long exp = Long.parseLong(payload.replaceAll(".*\"exp\":(\\d+).*", "$1"));
+        assertThat(exp - iat).isEqualTo(8 * 60 * 60);
 
         String lista = obtener(admin, "/api/usuarios");
         assertThat(lista).contains("docente1", "psico1", "alumno1");
         assertThat(lista.toLowerCase()).doesNotContain("password", "\"$2a$", "$2b$");
 
-        docente = login("docente1", "Docente2026");
-        psicologo = login("psico1", "Psico20266");
-        alumno = login("alumno1", "Alumno2026");
+        docente = login("docente1", "Docente2026!");
+        psicologo = login("psico1", "Psico20266!");
+        alumno = login("alumno1", "Alumno2026!");
         // solo ADMIN gestiona usuarios
         mvc.perform(as(docente, get("/api/usuarios"))).andExpect(status().isForbidden());
     }
