@@ -40,4 +40,9 @@ public class PersonaServiceImplement implements PersonaServiceInterface {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public List<Persona> alumnosEnRiesgo(double notaMinima) {
+        return repository.alumnosEnRiesgo(notaMinima);
+    }
 }

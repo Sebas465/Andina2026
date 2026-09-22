@@ -11,17 +11,17 @@ import java.util.List;
 @Repository
 public interface ICursoRepository extends JpaRepository<Curso, Long> {
     // ¿Qué cursos siguen sin docente en un periodo?
-    @Query(value = "SELECT c.id_curso, c.nombre, c.area\n" +
+    @Query(value = "SELECT c.*\n" +
             " FROM cursos c\n" +
             " WHERE NOT EXISTS (SELECT 1 FROM asignaciones_docentes ad\n" +
             "                   WHERE ad.id_curso = c.id_curso AND ad.id_periodo = :idPeriodo)\n" +
             " ORDER BY c.nombre", nativeQuery = true)
-    List<Object[]> cursosSinDocente(@Param("idPeriodo") Long idPeriodo);
+    List<Curso> cursosSinDocente(@Param("idPeriodo") Long idPeriodo);
 
     // ¿Para qué cursos hay que preparar material primero?
-    @Query(value = "SELECT c.id_curso, c.nombre, c.area\n" +
+    @Query(value = "SELECT c.*\n" +
             " FROM cursos c\n" +
             " WHERE NOT EXISTS (SELECT 1 FROM material_curso mc WHERE mc.id_curso = c.id_curso)\n" +
             " ORDER BY c.nombre", nativeQuery = true)
-    List<Object[]> cursosSinMaterial();
+    List<Curso> cursosSinMaterial();
 }

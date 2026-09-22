@@ -12,5 +12,4 @@ public interface PerfilAcademicoServiceInterface {
     public void update(PerfilAcademico p);
     public void delete(Long id);
     List<Object[]> alumnosConMenorPromedio(int limite, String lengua, Long idGrado);
-    List<Object[]> alumnosEnRiesgo(double notaMinima);
 }

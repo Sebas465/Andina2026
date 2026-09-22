@@ -11,6 +11,6 @@ public interface CursoServiceInterface {
     public Optional<Curso> listId(Long id);
     public void update(Curso c);
     public void delete(Long id);
-    List<Object[]> cursosSinDocente(Long idPeriodo);
-    List<Object[]> cursosSinMaterial();
+    List<Curso> cursosSinDocente(Long idPeriodo);
+    List<Curso> cursosSinMaterial();
 }

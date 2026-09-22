@@ -55,9 +55,12 @@ Cada uno tiene `GET` lista, `GET /{id}`, `POST`, `PUT /{id}` y `DELETE /{id}`.
 
 ## Reportes para decidir (`/api/reportes`)
 
-Mismo patrón que `/total` de demoSM2: la consulta nativa (`@Query(nativeQuery = true)`, devuelve `List<Object[]>`) está en
-el repository de su entidad (`IPerfilAcademicoRepository`, `IColegioRepository`, `IAulaRepository`,
-`IAsignacionDocenteRepository`, `ICursoRepository`), el service la expone y `ReporteController` pasa cada fila a su DTO.
+La consulta nativa (`@Query(nativeQuery = true)`) está en el repository de su entidad, el service la expone y
+`ReporteController` arma la respuesta:
+- **Filas de una entidad** (`cursos-sin-docente`, `cursos-sin-material` → `List<Curso>`; `alumnos-en-riesgo` →
+  `List<Persona>`): se convierten con `modelMapper.map(x, CursoDTOList.class)` / `PersonaDTOList`, como el top10 de Cita.
+- **Totales y promedios** (los demás): devuelven `List<Object[]>` y cada fila se pasa a su DTO con setters, como `/total`
+  de demoSM2.
 
 | Endpoint | Pregunta que responde | Roles |
 |---|---|---|

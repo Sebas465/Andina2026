@@ -42,12 +42,12 @@ public class CursoServiceImplement implements CursoServiceInterface {
     }
 
     @Override
-    public List<Object[]> cursosSinDocente(Long idPeriodo) {
+    public List<Curso> cursosSinDocente(Long idPeriodo) {
         return repository.cursosSinDocente(idPeriodo);
     }
 
     @Override
-    public List<Object[]> cursosSinMaterial() {
+    public List<Curso> cursosSinMaterial() {
         return repository.cursosSinMaterial();
     }
 }

@@ -145,9 +145,8 @@ class ReportesDecisionTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))                       // solo el 8 (el 15 aprueba)
                 .andExpect(jsonPath("$[0].nombres").value("Alumno8"))
-                .andExpect(jsonPath("$[0].tieneObservacionPsicologica").value(true))
                 .andReturn().getResponse().getContentAsString();
-        assertThat(body).doesNotContain("Duelo", "Estrés", "estadoPsicologico");
+        assertThat(body).doesNotContain("Duelo", "Estrés", "estadoPsicologico", "correo", "fechaNacimiento");
         mvc.perform(as(especialista, get("/api/reportes/alumnos-en-riesgo"))).andExpect(status().isOk());
     }
 
@@ -175,10 +174,10 @@ class ReportesDecisionTests {
                 .andExpect(jsonPath("$[0].cursos").value(2))
                 .andExpect(jsonPath("$[0].horasSemanales").value(7.5));
         mvc.perform(as(adminEscuela, get("/api/reportes/cursos-sin-docente/" + periodo)))
-                .andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].curso").value("Arte"));
+                .andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].nombre").value("Arte"));
         mvc.perform(as(adminEscuela, get("/api/reportes/cursos-sin-docente/99999"))).andExpect(status().isNotFound());
         mvc.perform(as(especialista, get("/api/reportes/cursos-sin-material")))
-                .andExpect(jsonPath("$[*].curso", containsInAnyOrder("Arte", "Comunicación")));
+                .andExpect(jsonPath("$[*].nombre", containsInAnyOrder("Arte", "Comunicación")));
         mvc.perform(as(adminEscuela, get("/api/reportes/matriculas-colegio-periodo")))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].colegio").value("IE Rural"))

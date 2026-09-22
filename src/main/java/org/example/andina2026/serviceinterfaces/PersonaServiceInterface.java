@@ -11,4 +11,5 @@ public interface PersonaServiceInterface {
     public Optional<Persona> listId(Long id);
     public void update(Persona p);
     public void delete(Long id);
+    List<Persona> alumnosEnRiesgo(double notaMinima);
 }

@@ -1,5 +1,6 @@
 package org.example.andina2026.controllers;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.example.andina2026.serviceinterfaces.AulaServiceInterface;
 import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
 import org.example.andina2026.serviceinterfaces.CursoServiceInterface;
 import org.example.andina2026.serviceinterfaces.PerfilAcademicoServiceInterface;
+import org.example.andina2026.serviceinterfaces.PersonaServiceInterface;
 import org.example.andina2026.serviceinterfaces.PeriodoAcademicoServiceInterface;
 
 import java.math.BigDecimal;
@@ -21,9 +23,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Reportes para tomar decisiones. Igual que en demoSM2 (MovieController /total):
- * la consulta nativa está en el repository, el service devuelve List<Object[]>
- * y aquí cada fila (item) se pasa a su DTO.
+ * Reportes para tomar decisiones (consultas nativas en el repository de cada entidad).
+ * - Si la consulta devuelve filas de una entidad (cursos, alumnos) se pasan al DTO con ModelMapper, como en Cita (top10).
+ * - Si calcula totales o promedios devuelve List<Object[]> y cada fila (item) se pasa a su DTO, como en demoSM2 (/total).
  */
 @RestController
 @RequestMapping("/api/reportes")
@@ -37,16 +39,21 @@ public class ReporteController {
     private final AsignacionDocenteServiceInterface asignacionService;
     private final CursoServiceInterface cursoService;
     private final PeriodoAcademicoServiceInterface periodoService;
+    private final PersonaServiceInterface personaService;
+    private final ModelMapper modelMapper;
 
     public ReporteController(PerfilAcademicoServiceInterface perfilService, ColegioServiceInterface colegioService,
                              AulaServiceInterface aulaService, AsignacionDocenteServiceInterface asignacionService,
-                             CursoServiceInterface cursoService, PeriodoAcademicoServiceInterface periodoService) {
+                             CursoServiceInterface cursoService, PeriodoAcademicoServiceInterface periodoService,
+                             PersonaServiceInterface personaService, ModelMapper modelMapper) {
         this.perfilService = perfilService;
         this.colegioService = colegioService;
         this.aulaService = aulaService;
         this.asignacionService = asignacionService;
         this.cursoService = cursoService;
         this.periodoService = periodoService;
+        this.personaService = personaService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/alumnos-menor-promedio")
@@ -146,20 +153,13 @@ public class ReporteController {
 
     @GetMapping("/alumnos-en-riesgo")
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
-    public ResponseEntity<List<AlumnoRiesgoDTO>> alumnosEnRiesgo() {
-
-        List<AlumnoRiesgoDTO> lista = perfilService.alumnosEnRiesgo(NOTA_MINIMA)
+    public ResponseEntity<List<PersonaDTOList>> alumnosEnRiesgo() {
+        List<PersonaDTOList> lista = personaService.alumnosEnRiesgo(NOTA_MINIMA)
                 .stream()
-                .map(item -> {
-                    AlumnoRiesgoDTO dto = new AlumnoRiesgoDTO();
-
-                    dto.setIdPersona(((Number) item[0]).longValue());
-                    dto.setNombres((String) item[1]);
-                    dto.setApellidos((String) item[2]);
-                    dto.setAula((String) item[3]);
-                    dto.setPromedio(new BigDecimal(item[4].toString()));
-                    dto.setTieneObservacionPsicologica(true); // la consulta ya filtra a quienes tienen observación
-
+                .map(x -> {
+                    PersonaDTOList dto = modelMapper.map(x, PersonaDTOList.class);
+                    dto.setIdAula(x.getAula() != null ? x.getAula().getIdAula() : null);
+                    dto.setIdRol(x.getRol() != null ? x.getRol().getIdTipoPersona() : null);
                     return dto;
                 })
                 .toList();
@@ -240,21 +240,13 @@ public class ReporteController {
 
     @GetMapping("/cursos-sin-docente/{idPeriodo}")
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
-    public ResponseEntity<List<CursoPendienteDTO>> cursosSinDocente(@PathVariable Long idPeriodo) {
+    public ResponseEntity<List<CursoDTOList>> cursosSinDocente(@PathVariable Long idPeriodo) {
         periodoService.listId(idPeriodo)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe PeriodoAcademico con id: " + idPeriodo));
 
-        List<CursoPendienteDTO> lista = cursoService.cursosSinDocente(idPeriodo)
+        List<CursoDTOList> lista = cursoService.cursosSinDocente(idPeriodo)
                 .stream()
-                .map(item -> {
-                    CursoPendienteDTO dto = new CursoPendienteDTO();
-
-                    dto.setIdCurso(((Number) item[0]).longValue());
-                    dto.setCurso((String) item[1]);
-                    dto.setArea((String) item[2]);
-
-                    return dto;
-                })
+                .map(x -> modelMapper.map(x, CursoDTOList.class))
                 .toList();
 
         return ResponseEntity.ok(lista);
@@ -262,19 +254,10 @@ public class ReporteController {
 
     @GetMapping("/cursos-sin-material")
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
-    public ResponseEntity<List<CursoPendienteDTO>> cursosSinMaterial() {
-
-        List<CursoPendienteDTO> lista = cursoService.cursosSinMaterial()
+    public ResponseEntity<List<CursoDTOList>> cursosSinMaterial() {
+        List<CursoDTOList> lista = cursoService.cursosSinMaterial()
                 .stream()
-                .map(item -> {
-                    CursoPendienteDTO dto = new CursoPendienteDTO();
-
-                    dto.setIdCurso(((Number) item[0]).longValue());
-                    dto.setCurso((String) item[1]);
-                    dto.setArea((String) item[2]);
-
-                    return dto;
-                })
+                .map(x -> modelMapper.map(x, CursoDTOList.class))
                 .toList();
 
         return ResponseEntity.ok(lista);
