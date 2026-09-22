@@ -21,11 +21,11 @@ import java.util.Objects;
 @RequestMapping("/api/roles-persona")
 public class RolController {
     private final RolServiceInterface service;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public RolController(RolServiceInterface service, ModelMapper MM) {
+    public RolController(RolServiceInterface service, ModelMapper modelMapper) {
         this.service = service;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -33,7 +33,7 @@ public class RolController {
     public ResponseEntity<List<RolDTOList>> listar() {
         List<RolDTOList> lista = service.list()
                 .stream()
-                .map(e -> toList(e))
+                .map(e -> modelMapper.map(e, RolDTOList.class))
                 .toList();
         return ResponseEntity.ok(lista);
     }
@@ -42,13 +42,13 @@ public class RolController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RolDTOList> buscarPorId(@PathVariable Long id) {
         Rol e = buscar(id);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, RolDTOList.class));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RolDTOList> registrar(@Valid @RequestBody RolDTOInsert dto) {
-        Rol e = MM.map(dto, Rol.class);
+        Rol e = modelMapper.map(dto, Rol.class);
         e.setIdTipoPersona(null);
         service.insert(e);
         URI location = ServletUriComponentsBuilder
@@ -56,17 +56,17 @@ public class RolController {
                 .path("/{id}")
                 .buildAndExpand(e.getIdTipoPersona())
                 .toUri();
-        return ResponseEntity.created(location).body(toList(e));
+        return ResponseEntity.created(location).body(modelMapper.map(e, RolDTOList.class));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RolDTOList> modificar(@PathVariable Long id, @Valid @RequestBody RolDTOInsert dto) {
         buscar(id);
-        Rol e = MM.map(dto, Rol.class);
+        Rol e = modelMapper.map(dto, Rol.class);
         e.setIdTipoPersona(id);
         service.update(e);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, RolDTOList.class));
     }
 
     @DeleteMapping("/{id}")
@@ -81,8 +81,4 @@ public class RolController {
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Rol con id: " + id));
     }
 
-    private RolDTOList toList(Rol e) {
-        RolDTOList dto = MM.map(e, RolDTOList.class);
-        return dto;
-    }
 }

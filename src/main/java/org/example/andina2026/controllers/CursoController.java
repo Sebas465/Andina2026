@@ -21,11 +21,11 @@ import java.util.Objects;
 @RequestMapping("/api/cursos")
 public class CursoController {
     private final CursoServiceInterface service;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public CursoController(CursoServiceInterface service, ModelMapper MM) {
+    public CursoController(CursoServiceInterface service, ModelMapper modelMapper) {
         this.service = service;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -33,7 +33,7 @@ public class CursoController {
     public ResponseEntity<List<CursoDTOList>> listar() {
         List<CursoDTOList> lista = service.list()
                 .stream()
-                .map(e -> toList(e))
+                .map(e -> modelMapper.map(e, CursoDTOList.class))
                 .toList();
         return ResponseEntity.ok(lista);
     }
@@ -42,13 +42,13 @@ public class CursoController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CursoDTOList> buscarPorId(@PathVariable Long id) {
         Curso e = buscar(id);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, CursoDTOList.class));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<CursoDTOList> registrar(@Valid @RequestBody CursoDTOInsert dto) {
-        Curso e = MM.map(dto, Curso.class);
+        Curso e = modelMapper.map(dto, Curso.class);
         e.setIdCurso(null);
         service.insert(e);
         URI location = ServletUriComponentsBuilder
@@ -56,17 +56,17 @@ public class CursoController {
                 .path("/{id}")
                 .buildAndExpand(e.getIdCurso())
                 .toUri();
-        return ResponseEntity.created(location).body(toList(e));
+        return ResponseEntity.created(location).body(modelMapper.map(e, CursoDTOList.class));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<CursoDTOList> modificar(@PathVariable Long id, @Valid @RequestBody CursoDTOInsert dto) {
         buscar(id);
-        Curso e = MM.map(dto, Curso.class);
+        Curso e = modelMapper.map(dto, Curso.class);
         e.setIdCurso(id);
         service.update(e);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, CursoDTOList.class));
     }
 
     @DeleteMapping("/{id}")
@@ -81,8 +81,4 @@ public class CursoController {
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Curso con id: " + id));
     }
 
-    private CursoDTOList toList(Curso e) {
-        CursoDTOList dto = MM.map(e, CursoDTOList.class);
-        return dto;
-    }
 }

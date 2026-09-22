@@ -26,13 +26,13 @@ public class PerfilAcademicoController {
     private final PerfilAcademicoServiceInterface service;
     private final PersonaServiceInterface personaService;
     private final AuditoriaServiceInterface auditoria;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public PerfilAcademicoController(PerfilAcademicoServiceInterface service, PersonaServiceInterface personaService, AuditoriaServiceInterface auditoria, ModelMapper MM) {
+    public PerfilAcademicoController(PerfilAcademicoServiceInterface service, PersonaServiceInterface personaService, AuditoriaServiceInterface auditoria, ModelMapper modelMapper) {
         this.service = service;
         this.personaService = personaService;
         this.auditoria = auditoria;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -55,7 +55,7 @@ public class PerfilAcademicoController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<PerfilAcademicoDTOInsert> registrar(@Valid @RequestBody PerfilAcademicoDTOInsert dto) {
-        PerfilAcademico e = MM.map(dto, PerfilAcademico.class);
+        PerfilAcademico e = modelMapper.map(dto, PerfilAcademico.class);
         e.setIdPerfilAcademico(null);
         e.setPersona(personaService.listId(dto.getIdPersona())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Persona con id: " + dto.getIdPersona())));
@@ -73,7 +73,7 @@ public class PerfilAcademicoController {
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<PerfilAcademicoDTOInsert> modificar(@PathVariable Long id, @Valid @RequestBody PerfilAcademicoDTOInsert dto) {
         PerfilAcademico anterior = buscar(id);
-        PerfilAcademico e = MM.map(dto, PerfilAcademico.class);
+        PerfilAcademico e = modelMapper.map(dto, PerfilAcademico.class);
         e.setIdPerfilAcademico(id);
         e.setPersona(personaService.listId(dto.getIdPersona())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Persona con id: " + dto.getIdPersona())));
@@ -104,15 +104,14 @@ public class PerfilAcademicoController {
         return x == null ? null : x.getIdPersona();
     }
 
-
     private PerfilAcademicoDTOList toList(PerfilAcademico e) {
-        PerfilAcademicoDTOList dto = MM.map(e, PerfilAcademicoDTOList.class);
+        PerfilAcademicoDTOList dto = modelMapper.map(e, PerfilAcademicoDTOList.class);
         dto.setIdPersona(e.getPersona() != null ? e.getPersona().getIdPersona() : null);
         return dto;
     }
 
     private PerfilAcademicoDTOInsert toDetail(PerfilAcademico e) {
-        PerfilAcademicoDTOInsert dto = MM.map(e, PerfilAcademicoDTOInsert.class);
+        PerfilAcademicoDTOInsert dto = modelMapper.map(e, PerfilAcademicoDTOInsert.class);
         dto.setIdPersona(e.getPersona() != null ? e.getPersona().getIdPersona() : null);
         return dto;
     }

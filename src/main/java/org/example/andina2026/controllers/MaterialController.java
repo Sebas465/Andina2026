@@ -23,12 +23,12 @@ import java.util.Objects;
 public class MaterialController {
     private final MaterialServiceInterface service;
     private final PersonaServiceInterface personaService;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public MaterialController(MaterialServiceInterface service, PersonaServiceInterface personaService, ModelMapper MM) {
+    public MaterialController(MaterialServiceInterface service, PersonaServiceInterface personaService, ModelMapper modelMapper) {
         this.service = service;
         this.personaService = personaService;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -51,7 +51,7 @@ public class MaterialController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<MaterialDTOList> registrar(@Valid @RequestBody MaterialDTOInsert dto) {
-        Material e = MM.map(dto, Material.class);
+        Material e = modelMapper.map(dto, Material.class);
         e.setIdMaterial(null);
         e.setPersona(personaService.listId(dto.getIdPersona())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Persona con id: " + dto.getIdPersona())));
@@ -68,7 +68,7 @@ public class MaterialController {
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<MaterialDTOList> modificar(@PathVariable Long id, @Valid @RequestBody MaterialDTOInsert dto) {
         buscar(id);
-        Material e = MM.map(dto, Material.class);
+        Material e = modelMapper.map(dto, Material.class);
         e.setIdMaterial(id);
         e.setPersona(personaService.listId(dto.getIdPersona())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Persona con id: " + dto.getIdPersona())));
@@ -89,7 +89,7 @@ public class MaterialController {
     }
 
     private MaterialDTOList toList(Material e) {
-        MaterialDTOList dto = MM.map(e, MaterialDTOList.class);
+        MaterialDTOList dto = modelMapper.map(e, MaterialDTOList.class);
         dto.setIdPersona(e.getPersona() != null ? e.getPersona().getIdPersona() : null);
         return dto;
     }

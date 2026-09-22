@@ -29,14 +29,14 @@ public class AulaController {
     private final ColegioServiceInterface colegioService;
     private final GradoServiceInterface gradoService;
     private final AuditoriaServiceInterface auditoria;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public AulaController(AulaServiceInterface service, ColegioServiceInterface colegioService, GradoServiceInterface gradoService, AuditoriaServiceInterface auditoria, ModelMapper MM) {
+    public AulaController(AulaServiceInterface service, ColegioServiceInterface colegioService, GradoServiceInterface gradoService, AuditoriaServiceInterface auditoria, ModelMapper modelMapper) {
         this.service = service;
         this.colegioService = colegioService;
         this.gradoService = gradoService;
         this.auditoria = auditoria;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -59,7 +59,7 @@ public class AulaController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AulaDTOList> registrar(@Valid @RequestBody AulaDTOInsert dto) {
-        Aula e = MM.map(dto, Aula.class);
+        Aula e = modelMapper.map(dto, Aula.class);
         e.setIdAula(null);
         e.setColegio(colegioService.listId(dto.getIdColegio())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + dto.getIdColegio())));
@@ -83,7 +83,7 @@ public class AulaController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AulaDTOList> modificar(@PathVariable Long id, @Valid @RequestBody AulaDTOInsert dto) {
         Aula anterior = buscar(id);
-        Aula e = MM.map(dto, Aula.class);
+        Aula e = modelMapper.map(dto, Aula.class);
         e.setIdAula(id);
         e.setColegio(colegioService.listId(dto.getIdColegio())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + dto.getIdColegio())));
@@ -123,9 +123,8 @@ public class AulaController {
         return x == null ? null : x.getIdColegio();
     }
 
-
     private AulaDTOList toList(Aula e) {
-        AulaDTOList dto = MM.map(e, AulaDTOList.class);
+        AulaDTOList dto = modelMapper.map(e, AulaDTOList.class);
         dto.setIdColegio(e.getColegio() != null ? e.getColegio().getIdColegio() : null);
         dto.setIdGrados(e.getGrados().stream().map(Grado::getIdGrado).toList());
         return dto;

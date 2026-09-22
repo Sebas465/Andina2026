@@ -35,16 +35,16 @@ public class DetalleMatriculaController {
     private final MatriculaServiceInterface matriculaService;
     private final PeriodoAcademicoServiceInterface periodoAcademicoService;
     private final AuditoriaServiceInterface auditoria;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public DetalleMatriculaController(DetalleMatriculaServiceInterface service, CursoServiceInterface cursoService, GradoServiceInterface gradoService, MatriculaServiceInterface matriculaService, PeriodoAcademicoServiceInterface periodoAcademicoService, AuditoriaServiceInterface auditoria, ModelMapper MM) {
+    public DetalleMatriculaController(DetalleMatriculaServiceInterface service, CursoServiceInterface cursoService, GradoServiceInterface gradoService, MatriculaServiceInterface matriculaService, PeriodoAcademicoServiceInterface periodoAcademicoService, AuditoriaServiceInterface auditoria, ModelMapper modelMapper) {
         this.service = service;
         this.cursoService = cursoService;
         this.gradoService = gradoService;
         this.matriculaService = matriculaService;
         this.periodoAcademicoService = periodoAcademicoService;
         this.auditoria = auditoria;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -67,7 +67,7 @@ public class DetalleMatriculaController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<DetalleMatriculaDTOList> registrar(@Valid @RequestBody DetalleMatriculaDTOInsert dto) {
-        DetalleMatricula e = MM.map(dto, DetalleMatricula.class);
+        DetalleMatricula e = modelMapper.map(dto, DetalleMatricula.class);
         e.setIdDetalleMatricula(null);
         e.setMatricula(matriculaService.listId(dto.getIdMatricula())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Matricula con id: " + dto.getIdMatricula())));
@@ -91,7 +91,7 @@ public class DetalleMatriculaController {
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<DetalleMatriculaDTOList> modificar(@PathVariable Long id, @Valid @RequestBody DetalleMatriculaDTOInsert dto) {
         DetalleMatricula anterior = buscar(id);
-        DetalleMatricula e = MM.map(dto, DetalleMatricula.class);
+        DetalleMatricula e = modelMapper.map(dto, DetalleMatricula.class);
         e.setIdDetalleMatricula(id);
         e.setMatricula(matriculaService.listId(dto.getIdMatricula())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Matricula con id: " + dto.getIdMatricula())));
@@ -142,9 +142,8 @@ public class DetalleMatriculaController {
         return x == null ? null : x.getIdPeriodo();
     }
 
-
     private DetalleMatriculaDTOList toList(DetalleMatricula e) {
-        DetalleMatriculaDTOList dto = MM.map(e, DetalleMatriculaDTOList.class);
+        DetalleMatriculaDTOList dto = modelMapper.map(e, DetalleMatriculaDTOList.class);
         dto.setIdMatricula(e.getMatricula() != null ? e.getMatricula().getIdMatricula() : null);
         dto.setIdCurso(e.getCurso() != null ? e.getCurso().getIdCurso() : null);
         dto.setIdPeriodo(e.getPeriodo() != null ? e.getPeriodo().getIdPeriodo() : null);

@@ -29,14 +29,14 @@ public class PersonaController {
     private final AulaServiceInterface aulaService;
     private final RolServiceInterface rolService;
     private final AuditoriaServiceInterface auditoria;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public PersonaController(PersonaServiceInterface service, AulaServiceInterface aulaService, RolServiceInterface rolService, AuditoriaServiceInterface auditoria, ModelMapper MM) {
+    public PersonaController(PersonaServiceInterface service, AulaServiceInterface aulaService, RolServiceInterface rolService, AuditoriaServiceInterface auditoria, ModelMapper modelMapper) {
         this.service = service;
         this.aulaService = aulaService;
         this.rolService = rolService;
         this.auditoria = auditoria;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -59,7 +59,7 @@ public class PersonaController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<PersonaDTOInsert> registrar(@Valid @RequestBody PersonaDTOInsert dto) {
-        Persona e = MM.map(dto, Persona.class);
+        Persona e = modelMapper.map(dto, Persona.class);
         e.setIdPersona(null);
         e.setAula(aulaService.listId(dto.getIdAula())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Aula con id: " + dto.getIdAula())));
@@ -81,7 +81,7 @@ public class PersonaController {
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<PersonaDTOInsert> modificar(@PathVariable Long id, @Valid @RequestBody PersonaDTOInsert dto) {
         Persona anterior = buscar(id);
-        Persona e = MM.map(dto, Persona.class);
+        Persona e = modelMapper.map(dto, Persona.class);
         e.setIdPersona(id);
         e.setCodigoEstudiante(anterior.getCodigoEstudiante());
         e.setAula(aulaService.listId(dto.getIdAula())
@@ -164,14 +164,14 @@ public class PersonaController {
     }
 
     private PersonaDTOList toList(Persona e) {
-        PersonaDTOList dto = MM.map(e, PersonaDTOList.class);
+        PersonaDTOList dto = modelMapper.map(e, PersonaDTOList.class);
         dto.setIdAula(e.getAula() != null ? e.getAula().getIdAula() : null);
         dto.setIdRol(e.getRol() != null ? e.getRol().getIdTipoPersona() : null);
         return dto;
     }
 
     private PersonaDTOInsert toDetail(Persona e) {
-        PersonaDTOInsert dto = MM.map(e, PersonaDTOInsert.class);
+        PersonaDTOInsert dto = modelMapper.map(e, PersonaDTOInsert.class);
         dto.setIdAula(e.getAula() != null ? e.getAula().getIdAula() : null);
         dto.setIdRol(e.getRol() != null ? e.getRol().getIdTipoPersona() : null);
         return dto;
