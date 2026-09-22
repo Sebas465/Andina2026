@@ -5,24 +5,24 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "colegios")
 public class Colegio {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_colegio")
     private Long idColegio;
 
-    @Column(name = "nombre", length = 30, nullable = false)
+    @Column(name = "nombre", length = 200, nullable = false)
     private String nombre;
 
-    @Column(name = "departamento", length = 30, nullable = false)
+    @Column(name = "departamento", length = 100, nullable = false)
     private String departamento;
 
-    @Column(name = "provincia", length = 30, nullable = false)
+    @Column(name = "provincia", length = 100, nullable = false)
     private String provincia;
 
-    @Column(name = "distrito", length = 30, nullable = false)
+    @Column(name = "distrito", length = 100, nullable = false)
     private String distrito;
 
-    @Column(name = "comunidad", length = 30, nullable = false)
+    @Column(name = "comunidad", length = 150, nullable = false)
     private String comunidad;
 
     @Column(name = "tipo_zona", length = 30, nullable = false)
