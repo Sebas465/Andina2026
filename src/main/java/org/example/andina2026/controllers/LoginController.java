@@ -1,14 +1,12 @@
 package org.example.andina2026.controllers;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +19,9 @@ import org.example.andina2026.securities.JwtTokenService;
 @RestController
 @RequestMapping("/login")
 public class LoginController {
+    // H2.1: registro de intentos de inicio de sesión (la contraseña nunca se registra)
     private static final Logger securityLog = LoggerFactory.getLogger("andina.security.login");
+
     private final AuthenticationManager authenticationManager;
 
     private final JwtTokenService jwtTokenService;
@@ -35,26 +35,23 @@ public class LoginController {
     }
 
     @PostMapping
-    @SecurityRequirements // público: Swagger no le envía el token (evita 401 si Authorize tiene algo inválido)
     public ResponseEntity<LoginResponseDTO> login(
-            @RequestBody LoginRequestDTO request, HttpServletRequest http) {
+            @RequestBody LoginRequestDTO request) {
 
         Authentication authentication;
         try {
             authentication =
                     authenticationManager.authenticate(
                             new UsernamePasswordAuthenticationToken(
-                                    request.getDni(),
+                                    request.getDni(), // H2.1: se inicia sesión con el DNI
                                     request.getPassword()
                             )
                     );
         } catch (AuthenticationException ex) {
-            // Log de seguridad (H2.1): usuario, IP y motivo; la contraseña nunca se registra
-            securityLog.warn("LOGIN FALLIDO dni='{}' ip={} motivo={}", request.getDni(), http.getRemoteAddr(),
-                    ex.getClass().getSimpleName());
+            securityLog.warn("LOGIN FALLIDO dni='{}'", request.getDni());
             throw ex;
         }
-        securityLog.info("LOGIN OK dni='{}' ip={}", request.getDni(), http.getRemoteAddr());
+        securityLog.info("LOGIN OK dni='{}'", request.getDni());
 
         UserDetails userDetails =
                 (UserDetails) authentication.getPrincipal();

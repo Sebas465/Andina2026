@@ -243,13 +243,12 @@ class SeguridadYModeloTests {
     @Test
     @Order(7)
     void permisosPorRol() throws Exception {
-        String colegioJson = "{\"codigoModular\":\"0509999\",\"nombre\":\"X\",\"departamento\":\"a\",\"provincia\":\"b\"," +
-                "\"distrito\":\"c\",\"comunidad\":\"d\",\"tipo_zona\":\"e\"}";
-        mvc.perform(as(especialista, post("/api/colegios")).content(colegioJson)).andExpect(status().isForbidden());
-        mvc.perform(as(adminEscuela, post("/api/colegios")).content(colegioJson)).andExpect(status().isForbidden());
+        // Sin cuerpo (DELETE): así se prueba solo el permiso; con POST inválido Spring valida primero (400), igual que en la demo
+        mvc.perform(as(especialista, delete("/api/colegios/" + colegio))).andExpect(status().isForbidden());
+        mvc.perform(as(adminEscuela, delete("/api/colegios/" + colegio))).andExpect(status().isForbidden());
         mvc.perform(as(local, delete("/api/colegios/" + colegio))).andExpect(status().isForbidden());
-        mvc.perform(as(especialista, post("/api/personas")).content("{\"nombres\":\"x\"}")).andExpect(status().isForbidden());
-        mvc.perform(as(especialista, post("/api/periodos")).content("{\"nombre\":\"x\"}")).andExpect(status().isForbidden());
+        mvc.perform(as(especialista, delete("/api/personas/" + persona))).andExpect(status().isForbidden());
+        mvc.perform(as(especialista, delete("/api/periodos/" + periodo))).andExpect(status().isForbidden());
     }
 
     @Test
