@@ -37,9 +37,22 @@ public class ReporteServiceImplement implements ReporteServiceInterface {
     }
 
     @Override
-    public List<AlumnoRendimientoDTO> alumnosConMenorPromedio(int limite) {
-        return repository.alumnosConMenorPromedio(limite).stream()
+    public List<AlumnoRendimientoDTO> alumnosConMenorPromedio(int limite, String lengua, Long idGrado) {
+        return repository.alumnosConMenorPromedio(limite, lengua, idGrado).stream()
                 .map(r -> new AlumnoRendimientoDTO(lng(r[0]), str(r[1]), str(r[2]), str(r[3]), str(r[4]), dec(r[5])))
+                .toList();
+    }
+
+    @Override
+    public List<EscuelaInactivaDTO> escuelasInactivas(int dias) {
+        java.time.LocalDateTime ahora = java.time.LocalDateTime.now();
+        return repository.escuelasInactivas(ahora.minusDays(dias)).stream()
+                .map(r -> {
+                    java.time.LocalDateTime ultima = r[3] == null ? null
+                            : r[3] instanceof java.sql.Timestamp ts ? ts.toLocalDateTime() : (java.time.LocalDateTime) r[3];
+                    Long diasSin = ultima == null ? null : java.time.Duration.between(ultima, ahora).toDays();
+                    return new EscuelaInactivaDTO(lng(r[0]), str(r[1]), str(r[2]), ultima, diasSin);
+                })
                 .toList();
     }
 

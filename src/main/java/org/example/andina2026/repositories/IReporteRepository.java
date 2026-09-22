@@ -23,10 +23,37 @@ public interface IReporteRepository extends Repository<PerfilAcademico, Long> {
             JOIN aulas a           ON a.id_aula = p.id_aula
             JOIN colegios c        ON c.id_colegio = a.id_colegio
             WHERE UPPER(r.detalle) = 'ALUMNO' AND pa.notas IS NOT NULL
+              AND (CAST(:lengua AS VARCHAR) IS NULL OR p.lengua_materna = CAST(:lengua AS VARCHAR))
+              AND (CAST(:idGrado AS BIGINT) IS NULL OR EXISTS (
+                    SELECT 1 FROM matriculas m JOIN detalles_matricula dm ON dm.id_matricula = m.id_matricula
+                    WHERE m.id_persona = p.id_persona AND dm.id_grado = CAST(:idGrado AS BIGINT)))
             ORDER BY pa.notas ASC, p.apellidos ASC
             LIMIT :limite
             """, nativeQuery = true)
-    List<Object[]> alumnosConMenorPromedio(@Param("limite") int limite);
+    List<Object[]> alumnosConMenorPromedio(@Param("limite") int limite, @Param("lengua") String lengua,
+                                           @Param("idGrado") Long idGrado);
+
+    /** H1.1: ¿qué escuelas no tienen actividad (cambios registrados o matrículas) desde :desde? */
+    @Query(value = """
+            SELECT c.id_colegio, c.nombre, c.codigo_modular, MAX(act.fecha) AS ultima
+            FROM colegios c
+            LEFT JOIN (
+                SELECT m.id_colegio, CAST(dm.fecha_matricula AS TIMESTAMP) AS fecha
+                FROM detalles_matricula dm JOIN matriculas m ON m.id_matricula = dm.id_matricula
+                UNION ALL
+                SELECT a.id_registro, a.fecha FROM auditoria a WHERE a.entidad = 'Colegio'
+                UNION ALL
+                SELECT au.id_colegio, a.fecha FROM auditoria a JOIN aulas au ON a.entidad = 'Aula' AND a.id_registro = au.id_aula
+                UNION ALL
+                SELECT au.id_colegio, a.fecha FROM auditoria a
+                JOIN personas p ON a.entidad = 'Persona' AND a.id_registro = p.id_persona
+                JOIN aulas au ON au.id_aula = p.id_aula
+            ) act ON act.id_colegio = c.id_colegio
+            GROUP BY c.id_colegio, c.nombre, c.codigo_modular
+            HAVING MAX(act.fecha) IS NULL OR MAX(act.fecha) < :desde
+            ORDER BY ultima ASC NULLS FIRST
+            """, nativeQuery = true)
+    List<Object[]> escuelasInactivas(@Param("desde") java.time.LocalDateTime desde);
 
     /** ¿A quién debe atender primero psicología? Desaprobados con observación psicológica registrada. */
     @Query(value = """

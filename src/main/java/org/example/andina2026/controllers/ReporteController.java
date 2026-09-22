@@ -25,19 +25,37 @@ public class ReporteController {
     }
 
     @GetMapping("/alumnos-menor-promedio")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE','PSICOLOGO')")
-    public ResponseEntity<List<AlumnoRendimientoDTO>> alumnosConMenorPromedio(@RequestParam(defaultValue = "10") int limite) {
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
+    public ResponseEntity<List<AlumnoRendimientoDTO>> alumnosConMenorPromedio(
+            @RequestParam(defaultValue = "10") int limite,
+            @RequestParam(required = false) String lengua,
+            @RequestParam(required = false) Long idGrado) {
         if (limite < 1 || limite > 100) {
             throw new IllegalArgumentException("limite debe estar entre 1 y 100");
         }
-        return ResponseEntity.ok(service.alumnosConMenorPromedio(limite));
+        if (lengua != null && !lengua.matches("QUECHUA|CASTELLANO|AMBOS")) {
+            throw new IllegalArgumentException("lengua debe ser QUECHUA, CASTELLANO o AMBOS");
+        }
+        return ResponseEntity.ok(service.alumnosConMenorPromedio(limite, lengua, idGrado));
+    }
+
+    /** H1.1: escuelas sin actividad (cambios o matrículas) en los últimos N días. */
+    @GetMapping("/escuelas-inactivas")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<List<EscuelaInactivaDTO>> escuelasInactivas(@RequestParam(defaultValue = "30") int dias) {
+        if (dias < 1 || dias > 3650) {
+            throw new IllegalArgumentException("dias debe estar entre 1 y 3650");
+        }
+        return ResponseEntity.ok(service.escuelasInactivas(dias));
     }
 
     /** H6.2: la misma lista priorizada, exportable a CSV (se abre en Excel con tildes correctas). */
     @GetMapping(value = "/alumnos-menor-promedio/csv", produces = "text/csv")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE','PSICOLOGO')")
-    public ResponseEntity<String> alumnosConMenorPromedioCsv(@RequestParam(defaultValue = "10") int limite) {
-        List<AlumnoRendimientoDTO> lista = alumnosConMenorPromedio(limite).getBody();
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
+    public ResponseEntity<String> alumnosConMenorPromedioCsv(@RequestParam(defaultValue = "10") int limite,
+                                                             @RequestParam(required = false) String lengua,
+                                                             @RequestParam(required = false) Long idGrado) {
+        List<AlumnoRendimientoDTO> lista = alumnosConMenorPromedio(limite, lengua, idGrado).getBody();
         StringBuilder csv = new StringBuilder("\uFEFFprioridad,idPersona,nombres,apellidos,aula,colegio,promedio\n");
         int i = 1;
         for (AlumnoRendimientoDTO a : lista) {
@@ -65,31 +83,31 @@ public class ReporteController {
     }
 
     @GetMapping("/alumnos-en-riesgo")
-    @PreAuthorize("hasAnyRole('ADMIN','PSICOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<List<AlumnoRiesgoDTO>> alumnosEnRiesgo() {
         return ResponseEntity.ok(service.alumnosEnRiesgo());
     }
 
     @GetMapping("/rendimiento-colegios")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<List<RendimientoColegioDTO>> rendimientoPorColegio() {
         return ResponseEntity.ok(service.rendimientoPorColegio());
     }
 
     @GetMapping("/ocupacion-aulas")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<List<OcupacionAulaDTO>> ocupacionDeAulas() {
         return ResponseEntity.ok(service.ocupacionDeAulas());
     }
 
     @GetMapping("/carga-docente")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<List<CargaDocenteDTO>> cargaDocente() {
         return ResponseEntity.ok(service.cargaDocente());
     }
 
     @GetMapping("/cursos-sin-docente/{idPeriodo}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<List<CursoPendienteDTO>> cursosSinDocente(@PathVariable Long idPeriodo) {
         periodoService.listId(idPeriodo)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe PeriodoAcademico con id: " + idPeriodo));
@@ -97,13 +115,13 @@ public class ReporteController {
     }
 
     @GetMapping("/cursos-sin-material")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<List<CursoPendienteDTO>> cursosSinMaterial() {
         return ResponseEntity.ok(service.cursosSinMaterial());
     }
 
     @GetMapping("/matriculas-colegio-periodo")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<List<MatriculaColegioDTO>> matriculasPorColegioYPeriodo() {
         return ResponseEntity.ok(service.matriculasPorColegioYPeriodo());
     }
