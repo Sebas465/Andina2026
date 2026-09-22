@@ -1,21 +1,23 @@
 package org.example.andina2026.dtos;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 public class AulaDTOInsert {
-
     private Long idAula;
 
-    @NotBlank(message = "El nombre es obligatorio!!!")
+    @NotBlank(message = "nombre es obligatorio")
+    @Size(max = 80, message = "nombre admite como máximo 80 caracteres")
     private String nombre;
 
-    @NotBlank(message = "La seccion es obligatoria!!!")
+    @NotBlank(message = "seccion es obligatorio")
+    @Size(max = 20, message = "seccion admite como máximo 20 caracteres")
     private String seccion;
 
-    @NotBlank(message = "La capacidad es obligatoria!!!")
+    @NotNull(message = "capacidad es obligatorio")
+    @Positive(message = "capacidad debe ser mayor que cero")
     private int capacidad;
 
-    @NotBlank(message = "El id del colegio es obligatorio!!!")
+    @NotNull(message = "idColegio es obligatorio")
     private Long idColegio;
 
     public Long getIdAula() {

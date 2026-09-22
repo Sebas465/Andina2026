@@ -1,7 +1,6 @@
 package org.example.andina2026.dtos;
 
 public class AulaDTOList {
-
     private Long idAula;
 
     private String nombre;
