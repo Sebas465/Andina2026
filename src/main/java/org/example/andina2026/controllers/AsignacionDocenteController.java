@@ -18,7 +18,9 @@ import org.example.andina2026.serviceinterfaces.PeriodoAcademicoServiceInterface
 import org.example.andina2026.serviceinterfaces.PersonaServiceInterface;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/asignaciones-docentes")
@@ -59,7 +61,7 @@ public class AsignacionDocenteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<AsignacionDocenteDTOList> registrar(@Valid @RequestBody AsignacionDocenteDTOInsert dto) {
         AsignacionDocente e = MM.map(dto, AsignacionDocente.class);
         e.setIdAsignacion(null);
@@ -83,7 +85,7 @@ public class AsignacionDocenteController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<AsignacionDocenteDTOList> modificar(@PathVariable Long id, @Valid @RequestBody AsignacionDocenteDTOInsert dto) {
         buscar(id);
         AsignacionDocente e = MM.map(dto, AsignacionDocente.class);
@@ -103,7 +105,7 @@ public class AsignacionDocenteController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         service.delete(buscar(id).getIdAsignacion());
         return ResponseEntity.noContent().build();

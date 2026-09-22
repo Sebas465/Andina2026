@@ -13,7 +13,9 @@ import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.PeriodoAcademicoServiceInterface;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/periodos")
@@ -44,13 +46,11 @@ public class PeriodoAcademicoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<PeriodoAcademicoDTOList> registrar(@Valid @RequestBody PeriodoAcademicoDTOInsert dto) {
-        if (dto.getFechaFin().isBefore(dto.getFechaInicio())) {
-            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");
-        }
         PeriodoAcademico e = MM.map(dto, PeriodoAcademico.class);
         e.setIdPeriodo(null);
+        validar(e, null);
         service.insert(e);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -61,20 +61,18 @@ public class PeriodoAcademicoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<PeriodoAcademicoDTOList> modificar(@PathVariable Long id, @Valid @RequestBody PeriodoAcademicoDTOInsert dto) {
-        if (dto.getFechaFin().isBefore(dto.getFechaInicio())) {
-            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");
-        }
         buscar(id);
         PeriodoAcademico e = MM.map(dto, PeriodoAcademico.class);
         e.setIdPeriodo(id);
+        validar(e, id);
         service.update(e);
         return ResponseEntity.ok(toList(e));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         service.delete(buscar(id).getIdPeriodo());
         return ResponseEntity.noContent().build();
@@ -83,6 +81,11 @@ public class PeriodoAcademicoController {
     private PeriodoAcademico buscar(Long id) {
         return service.listId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe PeriodoAcademico con id: " + id));
+    }
+    private void validar(PeriodoAcademico e, Long id) {
+        if (e.getFechaFin().isBefore(e.getFechaInicio())) {
+            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la de inicio");
+        }
     }
 
     private PeriodoAcademicoDTOList toList(PeriodoAcademico e) {

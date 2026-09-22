@@ -14,7 +14,9 @@ import org.example.andina2026.serviceinterfaces.MaterialServiceInterface;
 import org.example.andina2026.serviceinterfaces.PersonaServiceInterface;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/materiales")
@@ -47,7 +49,7 @@ public class MaterialController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<MaterialDTOList> registrar(@Valid @RequestBody MaterialDTOInsert dto) {
         Material e = MM.map(dto, Material.class);
         e.setIdMaterial(null);
@@ -63,7 +65,7 @@ public class MaterialController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<MaterialDTOList> modificar(@PathVariable Long id, @Valid @RequestBody MaterialDTOInsert dto) {
         buscar(id);
         Material e = MM.map(dto, Material.class);
@@ -75,7 +77,7 @@ public class MaterialController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','DOCENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         service.delete(buscar(id).getIdMaterial());
         return ResponseEntity.noContent().build();
