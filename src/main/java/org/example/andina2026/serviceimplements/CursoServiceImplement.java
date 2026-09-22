@@ -40,4 +40,14 @@ public class CursoServiceImplement implements CursoServiceInterface {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public List<Object[]> cursosSinDocente(Long idPeriodo) {
+        return repository.cursosSinDocente(idPeriodo);
+    }
+
+    @Override
+    public List<Object[]> cursosSinMaterial() {
+        return repository.cursosSinMaterial();
+    }
 }

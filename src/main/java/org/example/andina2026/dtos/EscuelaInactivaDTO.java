@@ -2,7 +2,6 @@ package org.example.andina2026.dtos;
 
 import java.time.LocalDateTime;
 
-/** H1.1: escuela sin actividad reciente (ultimaActividad = null → nunca tuvo actividad registrada). */
 public class EscuelaInactivaDTO {
     private Long idColegio;
     private String colegio;
@@ -10,32 +9,43 @@ public class EscuelaInactivaDTO {
     private LocalDateTime ultimaActividad;
     private Long diasSinActividad;
 
-    public EscuelaInactivaDTO(Long idColegio, String colegio, String codigoModular, LocalDateTime ultimaActividad,
-                              Long diasSinActividad) {
-        this.idColegio = idColegio;
-        this.colegio = colegio;
-        this.codigoModular = codigoModular;
-        this.ultimaActividad = ultimaActividad;
-        this.diasSinActividad = diasSinActividad;
-    }
-
     public Long getIdColegio() {
         return idColegio;
+    }
+
+    public void setIdColegio(Long idColegio) {
+        this.idColegio = idColegio;
     }
 
     public String getColegio() {
         return colegio;
     }
 
+    public void setColegio(String colegio) {
+        this.colegio = colegio;
+    }
+
     public String getCodigoModular() {
         return codigoModular;
+    }
+
+    public void setCodigoModular(String codigoModular) {
+        this.codigoModular = codigoModular;
     }
 
     public LocalDateTime getUltimaActividad() {
         return ultimaActividad;
     }
 
+    public void setUltimaActividad(LocalDateTime ultimaActividad) {
+        this.ultimaActividad = ultimaActividad;
+    }
+
     public Long getDiasSinActividad() {
         return diasSinActividad;
+    }
+
+    public void setDiasSinActividad(Long diasSinActividad) {
+        this.diasSinActividad = diasSinActividad;
     }
 }

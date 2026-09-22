@@ -2,7 +2,6 @@ package org.example.andina2026.dtos;
 
 import java.math.BigDecimal;
 
-/** Alumnos asignados frente a la capacidad del aula. */
 public class OcupacionAulaDTO {
     private Long idAula;
     private String aula;
@@ -12,41 +11,59 @@ public class OcupacionAulaDTO {
     private Long alumnos;
     private BigDecimal porcentajeOcupacion;
 
-    public OcupacionAulaDTO(Long idAula, String aula, String seccion, String colegio, Integer capacidad, Long alumnos, BigDecimal porcentajeOcupacion) {
-        this.idAula = idAula;
-        this.aula = aula;
-        this.seccion = seccion;
-        this.colegio = colegio;
-        this.capacidad = capacidad;
-        this.alumnos = alumnos;
-        this.porcentajeOcupacion = porcentajeOcupacion;
-    }
-
     public Long getIdAula() {
         return idAula;
+    }
+
+    public void setIdAula(Long idAula) {
+        this.idAula = idAula;
     }
 
     public String getAula() {
         return aula;
     }
 
+    public void setAula(String aula) {
+        this.aula = aula;
+    }
+
     public String getSeccion() {
         return seccion;
+    }
+
+    public void setSeccion(String seccion) {
+        this.seccion = seccion;
     }
 
     public String getColegio() {
         return colegio;
     }
 
+    public void setColegio(String colegio) {
+        this.colegio = colegio;
+    }
+
     public Integer getCapacidad() {
         return capacidad;
+    }
+
+    public void setCapacidad(Integer capacidad) {
+        this.capacidad = capacidad;
     }
 
     public Long getAlumnos() {
         return alumnos;
     }
 
+    public void setAlumnos(Long alumnos) {
+        this.alumnos = alumnos;
+    }
+
     public BigDecimal getPorcentajeOcupacion() {
         return porcentajeOcupacion;
+    }
+
+    public void setPorcentajeOcupacion(BigDecimal porcentajeOcupacion) {
+        this.porcentajeOcupacion = porcentajeOcupacion;
     }
 }

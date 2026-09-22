@@ -46,12 +46,17 @@ Cada uno tiene `GET` lista, `GET /{id}`, `POST`, `PUT /{id}` y `DELETE /{id}`.
 
 ## Datos sensibles (nunca en listas)
 
-- **Contraseñas**: solo se guardan como hash BCrypt; ninguna respuesta las devuelve (`UsersDTOList`).
+- **Contraseñas**: se hashean con BCrypt en `UsersController.registrar` (`passwordEncoder.encode`, bean de `SecurityConfig`)
+  y solo se guarda el hash; ninguna respuesta las devuelve (`UsersDTOList`).
 - **Persona**: `correo` y `fechaNacimiento` no salen en la lista; solo en el detalle, para ADMIN, ADMIN_ESCUELA y LOCAL.
 - **Perfil académico**: `notas` y `estadoPsicologico` no salen en la lista; el detalle solo para ADMIN, ADMIN_ESCUELA y LOCAL.
 - Errores de BD (duplicados, borrar con datos relacionados) → 409 con mensaje genérico, sin detalles internos.
 
-## Reportes para decidir (`/api/reportes`, consultas nativas en `IReporteRepository`)
+## Reportes para decidir (`/api/reportes`)
+
+Mismo patrón que `/total` de demoSM2: la consulta nativa (`@Query(nativeQuery = true)`, devuelve `List<Object[]>`) está en
+el repository de su entidad (`IPerfilAcademicoRepository`, `IColegioRepository`, `IAulaRepository`,
+`IAsignacionDocenteRepository`, `ICursoRepository`), el service la expone y `ReporteController` pasa cada fila a su DTO.
 
 | Endpoint | Pregunta que responde | Roles |
 |---|---|---|

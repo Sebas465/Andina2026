@@ -40,4 +40,14 @@ public class PerfilAcademicoServiceImplement implements PerfilAcademicoServiceIn
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public List<Object[]> alumnosConMenorPromedio(int limite, String lengua, Long idGrado) {
+        return repository.alumnosConMenorPromedio(limite, lengua, idGrado);
+    }
+
+    @Override
+    public List<Object[]> alumnosEnRiesgo(double notaMinima) {
+        return repository.alumnosEnRiesgo(notaMinima);
+    }
 }

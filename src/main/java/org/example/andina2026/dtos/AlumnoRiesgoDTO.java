@@ -2,7 +2,6 @@ package org.example.andina2026.dtos;
 
 import java.math.BigDecimal;
 
-/** Alumno desaprobado con observación psicológica registrada (sin el texto clínico). */
 public class AlumnoRiesgoDTO {
     private Long idPersona;
     private String nombres;
@@ -11,36 +10,51 @@ public class AlumnoRiesgoDTO {
     private BigDecimal promedio;
     private Boolean tieneObservacionPsicologica;
 
-    public AlumnoRiesgoDTO(Long idPersona, String nombres, String apellidos, String aula, BigDecimal promedio, Boolean tieneObservacionPsicologica) {
-        this.idPersona = idPersona;
-        this.nombres = nombres;
-        this.apellidos = apellidos;
-        this.aula = aula;
-        this.promedio = promedio;
-        this.tieneObservacionPsicologica = tieneObservacionPsicologica;
-    }
-
     public Long getIdPersona() {
         return idPersona;
+    }
+
+    public void setIdPersona(Long idPersona) {
+        this.idPersona = idPersona;
     }
 
     public String getNombres() {
         return nombres;
     }
 
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
     public String getApellidos() {
         return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
     }
 
     public String getAula() {
         return aula;
     }
 
+    public void setAula(String aula) {
+        this.aula = aula;
+    }
+
     public BigDecimal getPromedio() {
         return promedio;
     }
 
+    public void setPromedio(BigDecimal promedio) {
+        this.promedio = promedio;
+    }
+
     public Boolean getTieneObservacionPsicologica() {
         return tieneObservacionPsicologica;
+    }
+
+    public void setTieneObservacionPsicologica(Boolean tieneObservacionPsicologica) {
+        this.tieneObservacionPsicologica = tieneObservacionPsicologica;
     }
 }

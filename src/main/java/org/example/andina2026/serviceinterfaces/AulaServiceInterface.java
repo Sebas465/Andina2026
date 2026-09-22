@@ -11,4 +11,5 @@ public interface AulaServiceInterface {
     public Optional<Aula> listId(Long id);
     public void update(Aula a);
     public void delete(Long id);
+    List<Object[]> ocupacionDeAulas();
 }

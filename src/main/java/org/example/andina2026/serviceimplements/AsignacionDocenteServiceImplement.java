@@ -40,4 +40,9 @@ public class AsignacionDocenteServiceImplement implements AsignacionDocenteServi
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public List<Object[]> cargaDocente() {
+        return repository.cargaDocente();
+    }
 }
