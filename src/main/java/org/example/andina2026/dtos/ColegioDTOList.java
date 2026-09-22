@@ -3,6 +3,8 @@ package org.example.andina2026.dtos;
 public class ColegioDTOList {
     private Long idColegio;
 
+    private String codigoModular;
+
     private String nombre;
 
     private String departamento;
@@ -21,6 +23,14 @@ public class ColegioDTOList {
 
     public void setIdColegio(Long idColegio) {
         this.idColegio = idColegio;
+    }
+
+    public String getCodigoModular() {
+        return codigoModular;
+    }
+
+    public void setCodigoModular(String codigoModular) {
+        this.codigoModular = codigoModular;
     }
 
     public String getNombre() {

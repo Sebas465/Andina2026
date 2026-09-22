@@ -10,6 +10,9 @@ public class Colegio {
     @Column(name = "id_colegio")
     private Long idColegio;
 
+    @Column(name = "codigo_modular", length = 7, unique = true)
+    private String codigoModular;
+
     @Column(name = "nombre", length = 200, nullable = false)
     private String nombre;
 
@@ -28,8 +31,9 @@ public class Colegio {
     @Column(name = "tipo_zona", length = 30, nullable = false)
     private String tipo_zona;
 
-    public Colegio(Long idColegio, String nombre, String departamento, String provincia, String distrito, String comunidad, String tipo_zona) {
+    public Colegio(Long idColegio, String codigoModular, String nombre, String departamento, String provincia, String distrito, String comunidad, String tipo_zona) {
         this.idColegio = idColegio;
+        this.codigoModular = codigoModular;
         this.nombre = nombre;
         this.departamento = departamento;
         this.provincia = provincia;
@@ -47,6 +51,14 @@ public class Colegio {
 
     public void setIdColegio(Long idColegio) {
         this.idColegio = idColegio;
+    }
+
+    public String getCodigoModular() {
+        return codigoModular;
+    }
+
+    public void setCodigoModular(String codigoModular) {
+        this.codigoModular = codigoModular;
     }
 
     public String getNombre() {
