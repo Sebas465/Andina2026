@@ -21,11 +21,11 @@ import java.util.Objects;
 @RequestMapping("/api/grados")
 public class GradoController {
     private final GradoServiceInterface service;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public GradoController(GradoServiceInterface service, ModelMapper MM) {
+    public GradoController(GradoServiceInterface service, ModelMapper modelMapper) {
         this.service = service;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -33,7 +33,7 @@ public class GradoController {
     public ResponseEntity<List<GradoDTOList>> listar() {
         List<GradoDTOList> lista = service.list()
                 .stream()
-                .map(e -> toList(e))
+                .map(e -> modelMapper.map(e, GradoDTOList.class))
                 .toList();
         return ResponseEntity.ok(lista);
     }
@@ -42,13 +42,13 @@ public class GradoController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<GradoDTOList> buscarPorId(@PathVariable Long id) {
         Grado e = buscar(id);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, GradoDTOList.class));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GradoDTOList> registrar(@Valid @RequestBody GradoDTOInsert dto) {
-        Grado e = MM.map(dto, Grado.class);
+        Grado e = modelMapper.map(dto, Grado.class);
         e.setIdGrado(null);
         service.insert(e);
         URI location = ServletUriComponentsBuilder
@@ -56,17 +56,17 @@ public class GradoController {
                 .path("/{id}")
                 .buildAndExpand(e.getIdGrado())
                 .toUri();
-        return ResponseEntity.created(location).body(toList(e));
+        return ResponseEntity.created(location).body(modelMapper.map(e, GradoDTOList.class));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GradoDTOList> modificar(@PathVariable Long id, @Valid @RequestBody GradoDTOInsert dto) {
         buscar(id);
-        Grado e = MM.map(dto, Grado.class);
+        Grado e = modelMapper.map(dto, Grado.class);
         e.setIdGrado(id);
         service.update(e);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, GradoDTOList.class));
     }
 
     @DeleteMapping("/{id}")
@@ -81,8 +81,4 @@ public class GradoController {
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Grado con id: " + id));
     }
 
-    private GradoDTOList toList(Grado e) {
-        GradoDTOList dto = MM.map(e, GradoDTOList.class);
-        return dto;
-    }
 }

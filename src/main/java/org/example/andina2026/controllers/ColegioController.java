@@ -23,12 +23,12 @@ import java.util.Objects;
 public class ColegioController {
     private final ColegioServiceInterface service;
     private final AuditoriaServiceInterface auditoria;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public ColegioController(ColegioServiceInterface service, AuditoriaServiceInterface auditoria, ModelMapper MM) {
+    public ColegioController(ColegioServiceInterface service, AuditoriaServiceInterface auditoria, ModelMapper modelMapper) {
         this.service = service;
         this.auditoria = auditoria;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -36,7 +36,7 @@ public class ColegioController {
     public ResponseEntity<List<ColegioDTOList>> listar() {
         List<ColegioDTOList> lista = service.list()
                 .stream()
-                .map(e -> toList(e))
+                .map(e -> modelMapper.map(e, ColegioDTOList.class))
                 .toList();
         return ResponseEntity.ok(lista);
     }
@@ -45,13 +45,13 @@ public class ColegioController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ColegioDTOList> buscarPorId(@PathVariable Long id) {
         Colegio e = buscar(id);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, ColegioDTOList.class));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ColegioDTOList> registrar(@Valid @RequestBody ColegioDTOInsert dto) {
-        Colegio e = MM.map(dto, Colegio.class);
+        Colegio e = modelMapper.map(dto, Colegio.class);
         e.setIdColegio(null);
         service.insert(e);
         auditoria.registrar("Colegio", e.getIdColegio(), "CREAR", "Registro creado");
@@ -60,14 +60,14 @@ public class ColegioController {
                 .path("/{id}")
                 .buildAndExpand(e.getIdColegio())
                 .toUri();
-        return ResponseEntity.created(location).body(toList(e));
+        return ResponseEntity.created(location).body(modelMapper.map(e, ColegioDTOList.class));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ColegioDTOList> modificar(@PathVariable Long id, @Valid @RequestBody ColegioDTOInsert dto) {
         Colegio anterior = buscar(id);
-        Colegio e = MM.map(dto, Colegio.class);
+        Colegio e = modelMapper.map(dto, Colegio.class);
         e.setIdColegio(id);
         List<String> cambios = new ArrayList<>();
         if (!Objects.equals(anterior.getCodigoModular(), e.getCodigoModular())) cambios.add("codigoModular");
@@ -79,7 +79,7 @@ public class ColegioController {
         if (!Objects.equals(anterior.getTipo_zona(), e.getTipo_zona())) cambios.add("tipo_zona");
         service.update(e);
         auditoria.registrar("Colegio", id, "MODIFICAR", cambios.isEmpty() ? "Sin cambios" : "Campos modificados: " + String.join(", ", cambios));
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, ColegioDTOList.class));
     }
 
     @DeleteMapping("/{id}")
@@ -95,8 +95,4 @@ public class ColegioController {
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + id));
     }
 
-    private ColegioDTOList toList(Colegio e) {
-        ColegioDTOList dto = MM.map(e, ColegioDTOList.class);
-        return dto;
-    }
 }

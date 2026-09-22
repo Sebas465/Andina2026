@@ -29,14 +29,14 @@ public class MatriculaController {
     private final ColegioServiceInterface colegioService;
     private final PersonaServiceInterface personaService;
     private final AuditoriaServiceInterface auditoria;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public MatriculaController(MatriculaServiceInterface service, ColegioServiceInterface colegioService, PersonaServiceInterface personaService, AuditoriaServiceInterface auditoria, ModelMapper MM) {
+    public MatriculaController(MatriculaServiceInterface service, ColegioServiceInterface colegioService, PersonaServiceInterface personaService, AuditoriaServiceInterface auditoria, ModelMapper modelMapper) {
         this.service = service;
         this.colegioService = colegioService;
         this.personaService = personaService;
         this.auditoria = auditoria;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -59,7 +59,7 @@ public class MatriculaController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<MatriculaDTOList> registrar(@Valid @RequestBody MatriculaDTOInsert dto) {
-        Matricula e = MM.map(dto, Matricula.class);
+        Matricula e = modelMapper.map(dto, Matricula.class);
         e.setIdMatricula(null);
         e.setColegio(colegioService.listId(dto.getIdColegio())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + dto.getIdColegio())));
@@ -79,7 +79,7 @@ public class MatriculaController {
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','LOCAL')")
     public ResponseEntity<MatriculaDTOList> modificar(@PathVariable Long id, @Valid @RequestBody MatriculaDTOInsert dto) {
         Matricula anterior = buscar(id);
-        Matricula e = MM.map(dto, Matricula.class);
+        Matricula e = modelMapper.map(dto, Matricula.class);
         e.setIdMatricula(id);
         e.setColegio(colegioService.listId(dto.getIdColegio())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + dto.getIdColegio())));
@@ -114,9 +114,8 @@ public class MatriculaController {
         return x == null ? null : x.getIdPersona();
     }
 
-
     private MatriculaDTOList toList(Matricula e) {
-        MatriculaDTOList dto = MM.map(e, MatriculaDTOList.class);
+        MatriculaDTOList dto = modelMapper.map(e, MatriculaDTOList.class);
         dto.setIdColegio(e.getColegio() != null ? e.getColegio().getIdColegio() : null);
         dto.setIdPersona(e.getPersona() != null ? e.getPersona().getIdPersona() : null);
         return dto;

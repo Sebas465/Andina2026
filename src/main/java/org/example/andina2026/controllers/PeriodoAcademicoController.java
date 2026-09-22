@@ -21,11 +21,11 @@ import java.util.Objects;
 @RequestMapping("/api/periodos")
 public class PeriodoAcademicoController {
     private final PeriodoAcademicoServiceInterface service;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public PeriodoAcademicoController(PeriodoAcademicoServiceInterface service, ModelMapper MM) {
+    public PeriodoAcademicoController(PeriodoAcademicoServiceInterface service, ModelMapper modelMapper) {
         this.service = service;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -33,7 +33,7 @@ public class PeriodoAcademicoController {
     public ResponseEntity<List<PeriodoAcademicoDTOList>> listar() {
         List<PeriodoAcademicoDTOList> lista = service.list()
                 .stream()
-                .map(e -> toList(e))
+                .map(e -> modelMapper.map(e, PeriodoAcademicoDTOList.class))
                 .toList();
         return ResponseEntity.ok(lista);
     }
@@ -42,13 +42,13 @@ public class PeriodoAcademicoController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PeriodoAcademicoDTOList> buscarPorId(@PathVariable Long id) {
         PeriodoAcademico e = buscar(id);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, PeriodoAcademicoDTOList.class));
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<PeriodoAcademicoDTOList> registrar(@Valid @RequestBody PeriodoAcademicoDTOInsert dto) {
-        PeriodoAcademico e = MM.map(dto, PeriodoAcademico.class);
+        PeriodoAcademico e = modelMapper.map(dto, PeriodoAcademico.class);
         e.setIdPeriodo(null);
         validar(e, null);
         service.insert(e);
@@ -57,18 +57,18 @@ public class PeriodoAcademicoController {
                 .path("/{id}")
                 .buildAndExpand(e.getIdPeriodo())
                 .toUri();
-        return ResponseEntity.created(location).body(toList(e));
+        return ResponseEntity.created(location).body(modelMapper.map(e, PeriodoAcademicoDTOList.class));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<PeriodoAcademicoDTOList> modificar(@PathVariable Long id, @Valid @RequestBody PeriodoAcademicoDTOInsert dto) {
         buscar(id);
-        PeriodoAcademico e = MM.map(dto, PeriodoAcademico.class);
+        PeriodoAcademico e = modelMapper.map(dto, PeriodoAcademico.class);
         e.setIdPeriodo(id);
         validar(e, id);
         service.update(e);
-        return ResponseEntity.ok(toList(e));
+        return ResponseEntity.ok(modelMapper.map(e, PeriodoAcademicoDTOList.class));
     }
 
     @DeleteMapping("/{id}")
@@ -88,8 +88,4 @@ public class PeriodoAcademicoController {
         }
     }
 
-    private PeriodoAcademicoDTOList toList(PeriodoAcademico e) {
-        PeriodoAcademicoDTOList dto = MM.map(e, PeriodoAcademicoDTOList.class);
-        return dto;
-    }
 }

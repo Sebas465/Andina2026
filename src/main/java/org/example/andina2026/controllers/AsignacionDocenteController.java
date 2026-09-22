@@ -31,16 +31,16 @@ public class AsignacionDocenteController {
     private final CursoServiceInterface cursoService;
     private final PeriodoAcademicoServiceInterface periodoAcademicoService;
     private final PersonaServiceInterface personaService;
-    private final ModelMapper MM;
+    private final ModelMapper modelMapper;
 
-    public AsignacionDocenteController(AsignacionDocenteServiceInterface service, AulaServiceInterface aulaService, ColegioServiceInterface colegioService, CursoServiceInterface cursoService, PeriodoAcademicoServiceInterface periodoAcademicoService, PersonaServiceInterface personaService, ModelMapper MM) {
+    public AsignacionDocenteController(AsignacionDocenteServiceInterface service, AulaServiceInterface aulaService, ColegioServiceInterface colegioService, CursoServiceInterface cursoService, PeriodoAcademicoServiceInterface periodoAcademicoService, PersonaServiceInterface personaService, ModelMapper modelMapper) {
         this.service = service;
         this.aulaService = aulaService;
         this.colegioService = colegioService;
         this.cursoService = cursoService;
         this.periodoAcademicoService = periodoAcademicoService;
         this.personaService = personaService;
-        this.MM = MM;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
@@ -63,7 +63,7 @@ public class AsignacionDocenteController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<AsignacionDocenteDTOList> registrar(@Valid @RequestBody AsignacionDocenteDTOInsert dto) {
-        AsignacionDocente e = MM.map(dto, AsignacionDocente.class);
+        AsignacionDocente e = modelMapper.map(dto, AsignacionDocente.class);
         e.setIdAsignacion(null);
         e.setAula(aulaService.listId(dto.getIdAula())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Aula con id: " + dto.getIdAula())));
@@ -88,7 +88,7 @@ public class AsignacionDocenteController {
     @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
     public ResponseEntity<AsignacionDocenteDTOList> modificar(@PathVariable Long id, @Valid @RequestBody AsignacionDocenteDTOInsert dto) {
         buscar(id);
-        AsignacionDocente e = MM.map(dto, AsignacionDocente.class);
+        AsignacionDocente e = modelMapper.map(dto, AsignacionDocente.class);
         e.setIdAsignacion(id);
         e.setAula(aulaService.listId(dto.getIdAula())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Aula con id: " + dto.getIdAula())));
@@ -117,7 +117,7 @@ public class AsignacionDocenteController {
     }
 
     private AsignacionDocenteDTOList toList(AsignacionDocente e) {
-        AsignacionDocenteDTOList dto = MM.map(e, AsignacionDocenteDTOList.class);
+        AsignacionDocenteDTOList dto = modelMapper.map(e, AsignacionDocenteDTOList.class);
         dto.setIdAula(e.getAula() != null ? e.getAula().getIdAula() : null);
         dto.setIdCurso(e.getCurso() != null ? e.getCurso().getIdCurso() : null);
         dto.setIdPeriodo(e.getPeriodo() != null ? e.getPeriodo().getIdPeriodo() : null);
