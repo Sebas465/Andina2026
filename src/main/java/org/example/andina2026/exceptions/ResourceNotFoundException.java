@@ -1,4 +1,4 @@
-package pe.edu.upc.demosm2.exceptions;
+package org.example.andina2026.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException{
     public ResourceNotFoundException(String message) {

@@ -1,34 +1,41 @@
-package pe.edu.upc.demosm2.entities;
+package org.example.andina2026.entities;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Curso")
+@Table(name = "cursos")
 public class Curso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_curso;
-    @Column(name = "nombre_curso",length = 80,nullable = false)
-    private String nombre_curso;
-    @Column(name = "descripcion",length = 200,nullable = false)
+    @Column(name = "id_curso")
+    private Long idCurso;
+
+    @Column(name = "nombre", length = 100, nullable = false)
+    private String nombre;
+
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
-    @Column(name = "area",length = 80,nullable = false)
+
+    @Column(name = "area", length = 100)
     private String area;
 
-    public Long getId_curso() {
-        return id_curso;
+    public Curso() {
     }
 
-    public void setId_curso(Long id_curso) {
-        this.id_curso = id_curso;
+    public Long getIdCurso() {
+        return idCurso;
     }
 
-    public String getNombre_curso() {
-        return nombre_curso;
+    public void setIdCurso(Long idCurso) {
+        this.idCurso = idCurso;
     }
 
-    public void setNombre_curso(String nombre_curso) {
-        this.nombre_curso = nombre_curso;
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getDescripcion() {

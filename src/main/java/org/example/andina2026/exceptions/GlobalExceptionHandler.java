@@ -1,12 +1,16 @@
-package pe.edu.upc.demosm2.exceptions;
+package org.example.andina2026.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import pe.edu.upc.demosm2.dtos.ErrorResponse;
+import org.example.andina2026.dtos.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -48,5 +52,29 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(error);
     }
-}
 
+    private ResponseEntity<ErrorResponse> error(HttpStatus status, String message, HttpServletRequest request) {
+        return ResponseEntity.status(status).body(new ErrorResponse(status.value(), message, request.getRequestURI()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        return error(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleUnreadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        return error(HttpStatus.BAD_REQUEST, "El cuerpo de la petición no es un JSON válido", request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
+        // No se devuelve el mensaje de la BD: puede revelar nombres de tablas o datos
+        return error(HttpStatus.CONFLICT, "El registro está duplicado o tiene datos relacionados", request);
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, DisabledException.class})
+    public ResponseEntity<ErrorResponse> handleLogin(RuntimeException ex, HttpServletRequest request) {
+        return error(HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos", request);
+    }
+}

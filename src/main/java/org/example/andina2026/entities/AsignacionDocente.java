@@ -1,51 +1,51 @@
-package pe.edu.upc.demosm2.entities;
+package org.example.andina2026.entities;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "AsignacionDocente")
+@Table(name = "asignaciones_docentes")
 public class AsignacionDocente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_asignacion;
-    @Column(name = "nombre_colegio",length = 200,nullable = false)
-    private String id_aula;
+    @Column(name = "id_asignacion")
+    private Long idAsignacion;
+
+    @Column(name = "modalidad", length = 30)
+    private String modalidad;
+
+    @Column(name = "horas_semanales", precision = 4, scale = 1)
+    private BigDecimal horasSemanales;
+
     @ManyToOne
-    @JoinColumn(name = "id_curso")
+    @JoinColumn(name = "id_aula", nullable = false)
+    private Aula aula;
+
+    @ManyToOne
+    @JoinColumn(name = "id_curso", nullable = false)
     private Curso curso;
 
-    //private String periodo;
+    @ManyToOne
+    @JoinColumn(name = "id_periodo", nullable = false)
+    private PeriodoAcademico periodo;
 
-    //private String persona;
-    @Column(name = "modalidad",length = 150,nullable = false)
-    private String modalidad;
-    @Column(name = "horas_semanales",nullable = false)
-    private Long horassemanales;
+    @ManyToOne
+    @JoinColumn(name = "id_persona", nullable = false)
+    private Persona persona;
 
-    //private String colegio;
+    @ManyToOne
+    @JoinColumn(name = "id_colegio", nullable = false)
+    private Colegio colegio;
 
-    public Long getId_asignacion() {
-        return id_asignacion;
+    public AsignacionDocente() {
     }
 
-    public void setId_asignacion(Long id_asignacion) {
-        this.id_asignacion = id_asignacion;
+    public Long getIdAsignacion() {
+        return idAsignacion;
     }
 
-    public String getId_aula() {
-        return id_aula;
-    }
-
-    public void setId_aula(String id_aula) {
-        this.id_aula = id_aula;
-    }
-
-    public Curso getCurso() {
-        return curso;
-    }
-
-    public void setCurso(Curso curso) {
-        this.curso = curso;
+    public void setIdAsignacion(Long idAsignacion) {
+        this.idAsignacion = idAsignacion;
     }
 
     public String getModalidad() {
@@ -56,11 +56,51 @@ public class AsignacionDocente {
         this.modalidad = modalidad;
     }
 
-    public Long getHoras_semanales() {
-        return horassemanales;
+    public BigDecimal getHorasSemanales() {
+        return horasSemanales;
     }
 
-    public void setHoras_semanales(Long horas_semanales) {
-        this.horassemanales = horassemanales;
+    public void setHorasSemanales(BigDecimal horasSemanales) {
+        this.horasSemanales = horasSemanales;
+    }
+
+    public Aula getAula() {
+        return aula;
+    }
+
+    public void setAula(Aula aula) {
+        this.aula = aula;
+    }
+
+    public Curso getCurso() {
+        return curso;
+    }
+
+    public void setCurso(Curso curso) {
+        this.curso = curso;
+    }
+
+    public PeriodoAcademico getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(PeriodoAcademico periodo) {
+        this.periodo = periodo;
+    }
+
+    public Persona getPersona() {
+        return persona;
+    }
+
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+
+    public Colegio getColegio() {
+        return colegio;
+    }
+
+    public void setColegio(Colegio colegio) {
+        this.colegio = colegio;
     }
 }

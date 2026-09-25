@@ -1,75 +1,84 @@
-package pe.edu.upc.demosm2.controllers;
-
+package org.example.andina2026.controllers;
 
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pe.edu.upc.demosm2.dtos.CursoDTOInsert;
-import pe.edu.upc.demosm2.dtos.CursoDTOList;
-import pe.edu.upc.demosm2.entities.Curso;
-import pe.edu.upc.demosm2.exceptions.ResourceNotFoundException;
-import pe.edu.upc.demosm2.servicesinterfaces.ICursoService;
+import org.example.andina2026.dtos.CursoDTOInsert;
+import org.example.andina2026.dtos.CursoDTOList;
+import org.example.andina2026.entities.Curso;
+import org.example.andina2026.exceptions.ResourceNotFoundException;
+import org.example.andina2026.serviceinterfaces.CursoServiceInterface;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/curso")
+@RequestMapping("/api/cursos")
 public class CursoController {
-    public final ICursoService cS;
-    public final ModelMapper modelMapper;
+    private final CursoServiceInterface service;
+    private final ModelMapper modelMapper;
 
-    public CursoController(ICursoService cS, ModelMapper modelMapper) {
-        this.cS = cS;
+    public CursoController(CursoServiceInterface service, ModelMapper modelMapper) {
+        this.service = service;
         this.modelMapper = modelMapper;
     }
 
-
-    @PostMapping
-    public ResponseEntity<CursoDTOInsert> resgitrar (@Valid @RequestBody CursoDTOInsert dto){
-        Curso q = modelMapper.map(dto, Curso.class);
-        cS.insert(q);
-        CursoDTOInsert registro = modelMapper.map(dto, CursoDTOInsert.class);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(q.getId_curso())
-                .toUri();
-        return ResponseEntity
-                .created(location)
-                .body(registro);
-    }
-
     @GetMapping
-    public ResponseEntity <List<CursoDTOList>> listar(){
-        List<CursoDTOList> lista= cS.list()
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<CursoDTOList>> listar() {
+        List<CursoDTOList> lista = service.list()
                 .stream()
-                .map(curso -> modelMapper.map(curso, CursoDTOList.class))
+                .map(e -> modelMapper.map(e, CursoDTOList.class))
                 .toList();
         return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CursoDTOList> buscarcurso(@PathVariable Long id){
-        Curso curso = cS.listId(id)
-                .orElseThrow(()->
-                        new ResourceNotFoundException(
-                                "No existe el curso, intente de nuevo: "+ id
-                        ));
-        CursoDTOList respuesta = modelMapper.map(curso,CursoDTOList.class);
-        return ResponseEntity.ok(respuesta);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<CursoDTOList> buscarPorId(@PathVariable Long id) {
+        Curso e = buscar(id);
+        return ResponseEntity.ok(modelMapper.map(e, CursoDTOList.class));
     }
 
-    @DeleteMapping("/{id}") 
-    public ResponseEntity<Void> eliminar(@PathVariable Long id){
-        Curso curso = cS.listId(id)
-                .orElseThrow(()->
-                        new ResourceNotFoundException(
-                                "No existe el curso, intente de nuevo: "+ id
-                        ));
-        cS.delete(curso.getId_curso());
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<CursoDTOList> registrar(@Valid @RequestBody CursoDTOInsert dto) {
+        Curso e = modelMapper.map(dto, Curso.class);
+        e.setIdCurso(null);
+        service.insert(e);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(e.getIdCurso())
+                .toUri();
+        return ResponseEntity.created(location).body(modelMapper.map(e, CursoDTOList.class));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<CursoDTOList> modificar(@PathVariable Long id, @Valid @RequestBody CursoDTOInsert dto) {
+        buscar(id);
+        Curso e = modelMapper.map(dto, Curso.class);
+        e.setIdCurso(id);
+        service.update(e);
+        return ResponseEntity.ok(modelMapper.map(e, CursoDTOList.class));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA')")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        service.delete(buscar(id).getIdCurso());
         return ResponseEntity.noContent().build();
     }
+
+    private Curso buscar(Long id) {
+        return service.listId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe Curso con id: " + id));
+    }
+
 }

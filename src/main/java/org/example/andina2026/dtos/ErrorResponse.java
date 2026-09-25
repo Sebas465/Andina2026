@@ -1,6 +1,7 @@
-package pe.edu.upc.demosm2.dtos;
+package org.example.andina2026.dtos;
 
 public class ErrorResponse {
+
     private int status;
     private String message;
     private String path;

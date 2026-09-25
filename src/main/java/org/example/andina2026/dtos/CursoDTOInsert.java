@@ -1,30 +1,33 @@
-package pe.edu.upc.demosm2.dtos;
+package org.example.andina2026.dtos;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 public class CursoDTOInsert {
-    private Long id_curso;
-    @NotBlank(message = "El nombre del curso es obligatorio")
-    private String nombre_curso;
-    @NotBlank(message = "Ingrese una descripcion")
+    private Long idCurso;
+
+    @NotBlank(message = "nombre es obligatorio")
+    @Size(max = 100, message = "nombre admite como máximo 100 caracteres")
+    private String nombre;
+
     private String descripcion;
-    @NotBlank(message = "Indique el area que pertenece")
+
+    @Size(max = 100, message = "area admite como máximo 100 caracteres")
     private String area;
 
-    public Long getId_curso() {
-        return id_curso;
+    public Long getIdCurso() {
+        return idCurso;
     }
 
-    public void setId_curso(Long id_curso) {
-        this.id_curso = id_curso;
+    public void setIdCurso(Long idCurso) {
+        this.idCurso = idCurso;
     }
 
-    public String getNombre_curso() {
-        return nombre_curso;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNombre_curso(String nombre_curso) {
-        this.nombre_curso = nombre_curso;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getDescripcion() {

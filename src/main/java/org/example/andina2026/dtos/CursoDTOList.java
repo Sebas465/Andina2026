@@ -1,20 +1,28 @@
-package pe.edu.upc.demosm2.dtos;
-
-import jakarta.validation.constraints.NotBlank;
+package org.example.andina2026.dtos;
 
 public class CursoDTOList {
-    private String nombre_curso;
+    private Long idCurso;
+
+    private String nombre;
 
     private String descripcion;
 
     private String area;
 
-    public String getNombre_curso() {
-        return nombre_curso;
+    public Long getIdCurso() {
+        return idCurso;
     }
 
-    public void setNombre_curso(String nombre_curso) {
-        this.nombre_curso = nombre_curso;
+    public void setIdCurso(Long idCurso) {
+        this.idCurso = idCurso;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getDescripcion() {
