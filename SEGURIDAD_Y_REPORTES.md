@@ -8,8 +8,9 @@ XServiceImplement, XDTOInsert / XDTOList, controllers con ModelMapper, securitie
 1. PostgreSQL con la base `Andina2026` (ver `application.properties`). Las tablas se crean solas (`ddl-auto=update`).
 2. Carga los usuarios y datos con el script `datos_andina2026.sql` (o `crear_bd_andina2026.sql` en una BD vacía),
    igual que en `demoSM2_seguridad`: los usuarios se insertan en la BD con su contraseña ya hasheada (BCrypt).
-   El ADMIN entra con el DNI `00000001`.
-3. `POST /login` con `{"dni":"00000001","password":"…"}` → `token` (H2.1: se entra con **DNI**, sesión de 8 horas).
+   El ADMIN entra con el DNI `76588404` (en una BD que ya tenía el admin 00000001:
+   `UPDATE personas SET dni = '76588404' WHERE dni = '00000001';`).
+3. `POST /login` con `{"dni":"76588404","password":"…"}` → `token` (H2.1: se entra con **DNI**, sesión de 8 horas).
    En Swagger (`/swagger-ui/index.html`) pulsa **Authorize** y pega el token.
 4. Crear cuentas: `POST /api/personas` (solo ADMIN) con `dni`, `password` e `idRol` de un tipo con acceso
    (`ADMIN`, `ADMIN_ESCUELA`, `ESPECIALISTA` o `LOCAL`). La persona ES el usuario y su Tipo_Persona es su rol.
@@ -25,7 +26,7 @@ XServiceImplement, XDTOInsert / XDTOList, controllers con ModelMapper, securitie
 | COLEGIO (código modular MINEDU, historial) | `/api/colegios` | autenticado | ADMIN |
 | AULA (equipamiento, capacidad ≤ 40) | `/api/aula` | autenticado | ADMIN |
 | GRADO | `/api/grados` | autenticado | ADMIN |
-| Rol (tipo de persona) | `/api/roles-persona` | autenticado | ADMIN |
+| Rol (tipo de persona) | `/api/roles-persona` | ADMIN | ADMIN |
 | Persona (lengua materna, edad 12-16, ID anonimizado) | `/api/personas` | personal docente (también el detalle `/{id}`) | ADMIN, ADMIN_ESCUELA, LOCAL |
 | PERIODO_ACADEMICO | `/api/periodos` | autenticado | ADMIN, ADMIN_ESCUELA |
 | MATRICULA | `/api/matriculas` | personal docente | **solo ADMIN** |

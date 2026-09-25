@@ -161,7 +161,13 @@ class SeguridadYModeloTests {
         perfil = crear(local, "/api/perfiles-academicos", "{\"detalles\":\"Participa en clase\",\"notas\":15.5," +
                 "\"estadoPsicologico\":\"Ansiedad leve en evaluaciones\",\"idPersona\":" + persona + "}");
 
-        for (String url : new String[]{"/api/colegios", "/api/aula", "/api/roles-persona", "/api/grados", "/api/periodos",
+        // los tipos de persona (= roles de seguridad) solo los ve y gestiona el ADMIN
+        assertThat(obtener(admin, "/api/roles-persona")).startsWith("[{");
+        for (String t : new String[]{especialista, local, adminEscuela}) {
+            mvc.perform(as(t, get("/api/roles-persona"))).andExpect(status().isForbidden());
+            mvc.perform(as(t, get("/api/roles-persona/" + rolAlumno))).andExpect(status().isForbidden());
+        }
+        for (String url : new String[]{"/api/colegios", "/api/aula", "/api/grados", "/api/periodos",
                 "/api/cursos", "/api/asignaciones-docentes", "/api/materiales", "/api/materiales-cursos"}) {
             assertThat(obtener(especialista, url)).startsWith("[{");
         }

@@ -1,7 +1,7 @@
 -- Datos de prueba Andina2026: 30 por tabla, IDs 1000–1029 (generado por generar_datos_andina.py)
 -- Uso: psql -h localhost -U postgres -d Andina2026 -f datos_prueba_andina.sql  (tras arrancar la app una vez para crear las tablas).
 -- Cuentas (personas 1030-1059): DNI 40001000-40001029 (LOCAL, ESPECIALISTA, ADMIN_ESCUELA), contraseña Andina2026!
--- ADMIN del sistema: persona 1, DNI 00000001, contraseña Andina2026!
+-- ADMIN del sistema: persona 1, DNI 76588404, contraseña Andina2026!
 BEGIN;
 
 -- colegios
@@ -441,7 +441,7 @@ INSERT INTO roles_persona (id_tipo_persona, detalle) VALUES
   (1033, 'LOCAL');
 
 INSERT INTO personas (id_persona, codigo_estudiante, nombres, apellidos, fecha_nacimiento, correo, lengua_materna, estado, dni, password, enabled, id_aula, id_tipo_persona) VALUES
-  (1, NULL, 'Administrador', 'del sistema', NULL, NULL, NULL, 'ACTIVO', '00000001', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE, NULL, 1030),
+  (1, NULL, 'Administrador', 'del sistema', NULL, NULL, NULL, 'ACTIVO', '76588404', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE, NULL, 1030),
   (1030, 'EST-0F3F520C', 'Docente local 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001000', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE, 1000, 1033),
   (1031, 'EST-28E4DE38', 'Docente local 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001001', '$2a$10$GJm0e9TW22pE.T8/IPbRcub1VD.alUkiX9W1pf81wVb3TAD/zxxCi', TRUE, 1001, 1033),
   (1032, 'EST-40526FAD', 'Docente local 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001002', '$2a$10$PzeCvBT6YhK8sbh92pUJr.3PjLPjX/R7elgarJMEWZ4PJfeZVQ4Qu', TRUE, 1002, 1033),

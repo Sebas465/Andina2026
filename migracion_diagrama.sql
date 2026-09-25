@@ -48,6 +48,10 @@ FROM cuenta c WHERE NOT EXISTS (SELECT 1 FROM personas p WHERE p.dni = c.dni);
 DROP TABLE roles;
 DROP TABLE users;
 
+-- el ADMIN del sistema entra con el DNI 76588404
+UPDATE personas SET dni = '76588404'
+WHERE dni = '00000001' AND NOT EXISTS (SELECT 1 FROM personas WHERE dni = '76588404');
+
 -- 2) el grado de un alumno es por periodo: ya está en detalles_matricula
 DROP TABLE IF EXISTS aula_grado;
 

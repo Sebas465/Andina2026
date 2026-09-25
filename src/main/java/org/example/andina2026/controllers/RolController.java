@@ -29,7 +29,7 @@ public class RolController {
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<RolDTOList>> listar() {
         List<RolDTOList> lista = service.list()
                 .stream()
@@ -39,7 +39,7 @@ public class RolController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RolDTOList> buscarPorId(@PathVariable Long id) {
         Rol e = buscar(id);
         return ResponseEntity.ok(modelMapper.map(e, RolDTOList.class));
