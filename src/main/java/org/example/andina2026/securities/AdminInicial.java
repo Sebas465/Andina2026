@@ -47,3 +47,4 @@ public class AdminInicial implements CommandLineRunner {
         log.info("Usuario ADMIN inicial '{}' (DNI {}) creado.", username, dni);
     }
 }
+//Commit
