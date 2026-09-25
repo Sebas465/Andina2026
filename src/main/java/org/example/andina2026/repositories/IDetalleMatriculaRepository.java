@@ -7,3 +7,4 @@ import org.example.andina2026.entities.DetalleMatricula;
 @Repository
 public interface IDetalleMatriculaRepository extends JpaRepository<DetalleMatricula, Long> {
 }
+//Commit
