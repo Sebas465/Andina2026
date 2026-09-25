@@ -12,3 +12,4 @@ public interface DetalleMatriculaServiceInterface {
     public void update(DetalleMatricula d);
     public void delete(Long id);
 }
+//Commit
