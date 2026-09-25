@@ -3,8 +3,6 @@ package org.example.andina2026.entities;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "aulas")
@@ -36,11 +34,6 @@ public class Aula {
     @JoinColumn(name = "id_colegio", nullable = false)
     private Colegio colegio;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "aula_grado",
-            joinColumns = @JoinColumn(name = "id_aula"),
-            inverseJoinColumns = @JoinColumn(name = "id_grado"))
-    private List<Grado> grados = new ArrayList<>();
 
     public Aula() {
     }
@@ -109,11 +102,4 @@ public class Aula {
         this.colegio = colegio;
     }
 
-    public List<Grado> getGrados() {
-        return grados;
-    }
-
-    public void setGrados(List<Grado> grados) {
-        this.grados = grados;
-    }
 }

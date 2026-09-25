@@ -13,10 +13,8 @@ import org.example.andina2026.dtos.ReporteAgrupadoDTO;
 import org.example.andina2026.exceptions.ResourceNotFoundException;
 import org.example.andina2026.serviceinterfaces.AulaServiceInterface;
 import org.example.andina2026.serviceinterfaces.ColegioServiceInterface;
-import org.example.andina2026.serviceinterfaces.GradoServiceInterface;
 import org.example.andina2026.serviceinterfaces.AuditoriaServiceInterface;
 import org.example.andina2026.entities.Colegio;
-import org.example.andina2026.entities.Grado;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -28,14 +26,12 @@ import java.util.Objects;
 public class AulaController {
     private final AulaServiceInterface service;
     private final ColegioServiceInterface colegioService;
-    private final GradoServiceInterface gradoService;
     private final AuditoriaServiceInterface auditoria;
     private final ModelMapper modelMapper;
 
-    public AulaController(AulaServiceInterface service, ColegioServiceInterface colegioService, GradoServiceInterface gradoService, AuditoriaServiceInterface auditoria, ModelMapper modelMapper) {
+    public AulaController(AulaServiceInterface service, ColegioServiceInterface colegioService, AuditoriaServiceInterface auditoria, ModelMapper modelMapper) {
         this.service = service;
         this.colegioService = colegioService;
-        this.gradoService = gradoService;
         this.auditoria = auditoria;
         this.modelMapper = modelMapper;
     }
@@ -64,12 +60,6 @@ public class AulaController {
         e.setIdAula(null);
         e.setColegio(colegioService.listId(dto.getIdColegio())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + dto.getIdColegio())));
-        List<Grado> grados = new ArrayList<>();
-        for (Long idX : dto.getIdGrados() == null ? List.<Long>of() : dto.getIdGrados()) {
-            grados.add(gradoService.listId(idX)
-                    .orElseThrow(() -> new ResourceNotFoundException("No existe Grado con id: " + idX)));
-        }
-        e.setGrados(grados);
         service.insert(e);
         auditoria.registrar("Aula", e.getIdAula(), "CREAR", "Registro creado");
         URI location = ServletUriComponentsBuilder
@@ -88,12 +78,6 @@ public class AulaController {
         e.setIdAula(id);
         e.setColegio(colegioService.listId(dto.getIdColegio())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe Colegio con id: " + dto.getIdColegio())));
-        List<Grado> grados = new ArrayList<>();
-        for (Long idX : dto.getIdGrados() == null ? List.<Long>of() : dto.getIdGrados()) {
-            grados.add(gradoService.listId(idX)
-                    .orElseThrow(() -> new ResourceNotFoundException("No existe Grado con id: " + idX)));
-        }
-        e.setGrados(grados);
         List<String> cambios = new ArrayList<>();
         if (!Objects.equals(anterior.getNombre(), e.getNombre())) cambios.add("nombre");
         if (!Objects.equals(anterior.getSeccion(), e.getSeccion())) cambios.add("seccion");
@@ -127,7 +111,6 @@ public class AulaController {
     private AulaDTOList toList(Aula e) {
         AulaDTOList dto = modelMapper.map(e, AulaDTOList.class);
         dto.setIdColegio(e.getColegio() != null ? e.getColegio().getIdColegio() : null);
-        dto.setIdGrados(e.getGrados().stream().map(Grado::getIdGrado).toList());
         return dto;
     }
 

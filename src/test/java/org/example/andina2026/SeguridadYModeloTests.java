@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Recorre las 13 tablas del ERD por la API real (con JWT) y comprueba lo que pide el Word:
  * login con DNI y roles ESPECIALISTA/LOCAL/ADMIN_ESCUELA (H2.1), escuelas con código modular e historial (H1.1),
- * aulas con grados, equipamiento y capacidad (H1.2), matrícula con lengua materna, edad 12-16 e ID anonimizado (H2.2),
+ * aulas con equipamiento y capacidad (H1.2), matrícula con lengua materna, edad 12-16 e ID anonimizado (H2.2),
  * y que las listas no devuelvan datos sensibles. Usa H2 en modo PostgreSQL.
  */
 @SpringBootTest
@@ -143,7 +143,7 @@ class SeguridadYModeloTests {
                 "\"provincia\":\"Urubamba\",\"distrito\":\"Ollantaytambo\",\"comunidad\":\"Patacancha\",\"tipo_zona\":\"RURAL\"}");
         grado = crear(admin, "/api/grados", "{\"nombre\":\"1° Secundaria\",\"nivel\":\"Secundaria\"}");
         aula = crear(admin, "/api/aula", "{\"nombre\":\"Aula 1\",\"seccion\":\"A\",\"capacidad\":2,\"computadoras\":10," +
-                "\"proyectores\":1,\"conexionMbps\":3.5,\"idGrados\":[" + grado + "],\"idColegio\":" + colegio + "}");
+                "\"proyectores\":1,\"conexionMbps\":3.5,\"idColegio\":" + colegio + "}");
         rolAlumno = crear(admin, "/api/roles-persona", "{\"detalle\":\"ALUMNO\"}");
         persona = crear(local, "/api/personas", "{\"nombres\":\"Rosa\",\"apellidos\":\"Quispe\",\"fechaNacimiento\":\"" + nacido(13) + "\"," +
                 "\"correo\":\"rosa@andina.pe\",\"lenguaMaterna\":\"QUECHUA\",\"estado\":\"ACTIVO\",\"idAula\":" + aula + ",\"idRol\":" + rolAlumno + "}");
@@ -168,10 +168,9 @@ class SeguridadYModeloTests {
         assertThat(obtener(especialista, "/api/matriculas")).contains("\"idPersona\":" + persona);
         assertThat(obtener(local, "/api/detalles-matricula")).contains("\"idGrado\":" + grado);
 
-        // H1.2: el aula guarda sus grados y su equipamiento tecnológico
+        // H1.2: el aula guarda su equipamiento tecnológico (el grado va en el detalle de matrícula, por periodo)
         mvc.perform(as(admin, get("/api/aula/" + aula)))
                 .andExpect(jsonPath("$.idColegio").value(colegio))
-                .andExpect(jsonPath("$.idGrados", contains((int) grado)))
                 .andExpect(jsonPath("$.computadoras").value(10))
                 .andExpect(jsonPath("$.conexionMbps").value(3.5));
 
@@ -284,8 +283,6 @@ class SeguridadYModeloTests {
         mvc.perform(as(adminEscuela, post("/api/periodos")).content("{\"nombre\":\"mal\",\"fechaInicio\":\"2026-08-01\",\"fechaFin\":\"2026-03-01\"}"))
                 .andExpect(status().isBadRequest());
         mvc.perform(as(admin, post("/api/aula")).content("{\"nombre\":\"C\",\"seccion\":\"C\",\"capacidad\":10,\"idColegio\":99999}"))
-                .andExpect(status().isNotFound());
-        mvc.perform(as(admin, post("/api/aula")).content("{\"nombre\":\"C\",\"seccion\":\"C\",\"capacidad\":10,\"idGrados\":[99999],\"idColegio\":" + colegio + "}"))
                 .andExpect(status().isNotFound());
         mvc.perform(as(admin, post("/api/grados")).content("{\"nombre\":\"1° Secundaria EBR\",\"nivel\":\"Secundaria\"}"))
                 .andExpect(status().isConflict());

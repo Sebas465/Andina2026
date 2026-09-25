@@ -13,7 +13,7 @@ XServiceImplement, XDTOInsert / XDTOList, controllers con ModelMapper, securitie
    En Swagger (`/swagger-ui/index.html`) pulsa **Authorize** y pega el token.
 4. Crear cuentas: `POST /api/personas` (solo ADMIN) con `dni`, `password` e `idRol` de un tipo con acceso
    (`ADMIN`, `ADMIN_ESCUELA`, `ESPECIALISTA` o `LOCAL`). La persona ES el usuario y su Tipo_Persona es su rol.
-   Una BD que aún tenga `users`/`roles` se pasa al modelo nuevo con `migracion_persona_cuenta.sql`.
+   Una BD que aún tenga `users`/`roles` se pasa al modelo nuevo con `migracion_diagrama.sql`.
    Contraseña: 8+ caracteres con mayúscula, número y símbolo. Roles del Word: `ESPECIALISTA`, `LOCAL`,
    `ADMIN_ESCUELA`, más `ADMIN` (administrador del sistema, H1.1/H1.2).
 5. Si tu BD tenía los datos de prueba anteriores, aplica `migracion_word.sql` (idempotente).
@@ -23,7 +23,7 @@ XServiceImplement, XDTOInsert / XDTOList, controllers con ModelMapper, securitie
 | Tabla | Endpoint | Leer | Escribir |
 |---|---|---|---|
 | COLEGIO (código modular MINEDU, historial) | `/api/colegios` | autenticado | ADMIN |
-| AULA (grados atendidos, equipamiento, capacidad ≤ 40) | `/api/aula` | autenticado | ADMIN |
+| AULA (equipamiento, capacidad ≤ 40) | `/api/aula` | autenticado | ADMIN |
 | GRADO | `/api/grados` | autenticado | ADMIN |
 | Rol (tipo de persona) | `/api/roles-persona` | autenticado | ADMIN |
 | Persona (lengua materna, edad 12-16, ID anonimizado) | `/api/personas` | personal docente (también el detalle `/{id}`) | ADMIN, ADMIN_ESCUELA, LOCAL |
@@ -79,10 +79,10 @@ si calcula totales, devuelve `List<Object[]>` y cada fila se pasa al DTO con set
 ## Cambios para cumplir el Word (Trabajo Parcial)
 
 **Cambios al ERD (modelo de negocio)** — solo estos van al diagrama:
-`colegios.codigo_modular`, `aulas.computadoras` / `proyectores` / `conexion_mbps`, la tabla intermedia `aula_grado`
-(aula ↔ grados atendidos), `personas.lengua_materna` y `personas.codigo_estudiante`.
+`colegios.codigo_modular`, `aulas.computadoras` / `proyectores` / `conexion_mbps`, `personas.lengua_materna` y `personas.codigo_estudiante`.
 
-**Tablas de la capa de seguridad y técnicas (NO van en el ERD):** `users` (con `dni`), `roles` y `auditoria`.
+**Tabla técnica (NO va en el ERD):** `auditoria`. Las cuentas viven en `personas` (Persona = usuario, Tipo_Persona = rol).
+El grado del alumno va en `detalles_matricula` por periodo (ya no existe `aula_grado`).
 No son parte del modelo de negocio: las usa el código (Spring Security en `securities/` para el login con JWT, y el
 registro de cambios) y JPA las crea solo al arrancar, igual que en `demoSM2_seguridad`.
 

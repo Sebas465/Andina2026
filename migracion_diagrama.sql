@@ -1,6 +1,8 @@
--- Migración: la cuenta de acceso pasa de users/roles a personas (Persona = usuario, Tipo_Persona = rol).
--- Para una BD que ya tiene las tablas users y roles. Uso:
---   psql -h localhost -U postgres -d Andina2026 -f migracion_persona_cuenta.sql
+-- Migración al diagrama del informe (3.4.1): deja las 13 tablas del diagrama + auditoria.
+--  1) la cuenta de acceso pasa de users/roles a personas (Persona = usuario, Tipo_Persona = rol);
+--  2) se quita aula_grado: el grado va en detalles_matricula (id_grado + id_periodo), así cambia cada periodo.
+-- Para una BD que ya tiene las tablas users, roles y aula_grado. Uso:
+--   psql -h localhost -U postgres -d Andina2026 -f migracion_diagrama.sql
 -- Cada cuenta de users pasa a ser una persona nueva con su DNI, su hash BCrypt y como tipo su rol
 -- (ROLE_LOCAL → tipo LOCAL). Si su DNI ya existía en personas, la cuenta se le asigna a esa persona.
 BEGIN;
@@ -45,5 +47,8 @@ FROM cuenta c WHERE NOT EXISTS (SELECT 1 FROM personas p WHERE p.dni = c.dni);
 
 DROP TABLE roles;
 DROP TABLE users;
+
+-- 2) el grado de un alumno es por periodo: ya está en detalles_matricula
+DROP TABLE IF EXISTS aula_grado;
 
 COMMIT;

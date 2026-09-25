@@ -169,39 +169,6 @@ INSERT INTO grados (id_grado, nombre, nivel) VALUES
   (1028, 'Ciclo Intermedio CEBA', 'Básica Alternativa'),
   (1029, 'Ciclo Avanzado CEBA', 'Básica Alternativa');
 
--- aula_grado
-INSERT INTO aula_grado (id_aula, id_grado) VALUES
-  (1000, 1009),
-  (1001, 1010),
-  (1002, 1011),
-  (1003, 1009),
-  (1004, 1010),
-  (1005, 1011),
-  (1006, 1009),
-  (1007, 1010),
-  (1008, 1011),
-  (1009, 1009),
-  (1010, 1010),
-  (1011, 1011),
-  (1012, 1009),
-  (1013, 1010),
-  (1014, 1011),
-  (1015, 1009),
-  (1016, 1010),
-  (1017, 1011),
-  (1018, 1009),
-  (1019, 1010),
-  (1020, 1011),
-  (1021, 1009),
-  (1022, 1010),
-  (1023, 1011),
-  (1024, 1009),
-  (1025, 1010),
-  (1026, 1011),
-  (1027, 1009),
-  (1028, 1010),
-  (1029, 1011);
-
 -- periodos_academicos
 INSERT INTO periodos_academicos (id_periodo, nombre, fecha_inicio, fecha_fin, estado) VALUES
   (1000, '2012-I', '2012-03-01', '2012-07-31', 'CERRADO'),

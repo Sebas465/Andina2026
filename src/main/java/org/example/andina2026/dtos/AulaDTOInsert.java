@@ -3,8 +3,6 @@ package org.example.andina2026.dtos;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class AulaDTOInsert {
     private Long idAula;
@@ -33,7 +31,6 @@ public class AulaDTOInsert {
     @NotNull(message = "idColegio es obligatorio")
     private Long idColegio;
 
-    private List<Long> idGrados = new ArrayList<>();
 
     public Long getIdAula() {
         return idAula;
@@ -99,11 +96,4 @@ public class AulaDTOInsert {
         this.idColegio = idColegio;
     }
 
-    public List<Long> getIdGrados() {
-        return idGrados;
-    }
-
-    public void setIdGrados(List<Long> idGrados) {
-        this.idGrados = idGrados;
-    }
 }
