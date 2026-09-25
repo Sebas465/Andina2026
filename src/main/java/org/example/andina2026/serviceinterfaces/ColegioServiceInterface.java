@@ -12,3 +12,4 @@ public interface ColegioServiceInterface {
     public void update(Colegio c);
     public void delete(Long id);
 }
+//Commit
