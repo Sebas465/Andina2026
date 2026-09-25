@@ -7,3 +7,4 @@ import org.example.andina2026.entities.PerfilAcademico;
 @Repository
 public interface IPerfilAcademicoRepository extends JpaRepository<PerfilAcademico, Long> {
 }
+//Commit

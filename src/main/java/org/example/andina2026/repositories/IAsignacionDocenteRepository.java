@@ -7,3 +7,4 @@ import org.example.andina2026.entities.AsignacionDocente;
 @Repository
 public interface IAsignacionDocenteRepository extends JpaRepository<AsignacionDocente, Long> {
 }
+//Commit

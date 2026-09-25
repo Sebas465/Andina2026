@@ -7,3 +7,4 @@ import org.example.andina2026.entities.Material;
 @Repository
 public interface IMaterialRepository extends JpaRepository<Material, Long> {
 }
+//Commit

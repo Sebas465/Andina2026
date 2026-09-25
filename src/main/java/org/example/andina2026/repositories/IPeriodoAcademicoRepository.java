@@ -7,3 +7,4 @@ import org.example.andina2026.entities.PeriodoAcademico;
 @Repository
 public interface IPeriodoAcademicoRepository extends JpaRepository<PeriodoAcademico, Long> {
 }
+//Commit
