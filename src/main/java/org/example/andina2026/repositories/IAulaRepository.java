@@ -7,3 +7,4 @@ import org.example.andina2026.entities.Aula;
 @Repository
 public interface IAulaRepository extends JpaRepository<Aula, Long> {
 }
+//Commit

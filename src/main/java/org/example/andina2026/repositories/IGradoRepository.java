@@ -7,3 +7,4 @@ import org.example.andina2026.entities.Grado;
 @Repository
 public interface IGradoRepository extends JpaRepository<Grado, Long> {
 }
+//Commit
