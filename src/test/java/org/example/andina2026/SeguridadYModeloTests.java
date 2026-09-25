@@ -74,8 +74,10 @@ class SeguridadYModeloTests {
                 .andReturn().getResponse().getContentAsString();
     }
 
-    private String usuario(String dni, String nombre, String pass, String rol) {
-        return "{\"dni\":\"" + dni + "\",\"username\":\"" + nombre + "\",\"password\":\"" + pass + "\",\"roles\":[\"" + rol + "\"]}";
+    /** Persona con cuenta (antes «usuario»): el tipo de persona es su rol. */
+    private String cuenta(String dni, String nombre, String pass, long idTipo) {
+        return "{\"nombres\":\"" + nombre + "\",\"apellidos\":\"Prueba\",\"dni\":\"" + dni + "\",\"password\":\"" + pass
+                + "\",\"idRol\":" + idTipo + "}";
     }
 
     // ---------------------------------------------------------------------- pruebas
@@ -95,19 +97,21 @@ class SeguridadYModeloTests {
 
     @Test
     @Order(2)
-    void usuariosConDniRolesDelWordYContrasenaSegura() throws Exception {
+    void personasConCuentaDniTipoComoRolYContrasenaSegura() throws Exception {
         admin = login("00000001", "AdminPrueba2026");
-        crear(admin, "/api/usuarios", usuario("41234567", "esp.quispe", "Especial2026!", "ESPECIALISTA"));
-        crear(admin, "/api/usuarios", usuario("42345678", "local.mamani", "LocalAula2026!", "LOCAL"));
-        crear(admin, "/api/usuarios", usuario("43456789", "dir.condori", "Director2026!", "ADMIN_ESCUELA"));
-        // DNI repetido, DNI mal formado, rol que no existe en el Word y contraseña débil → 400
-        mvc.perform(as(admin, post("/api/usuarios")).content(usuario("41234567", "otro", "OtraClave2026!", "LOCAL")))
+        // el Tipo_Persona es el rol de seguridad (LOCAL → ROLE_LOCAL)
+        long tipoEsp = crear(admin, "/api/roles-persona", "{\"detalle\":\"ESPECIALISTA\"}");
+        long tipoLocal = crear(admin, "/api/roles-persona", "{\"detalle\":\"LOCAL\"}");
+        long tipoDir = crear(admin, "/api/roles-persona", "{\"detalle\":\"ADMIN_ESCUELA\"}");
+        long esp = crear(admin, "/api/personas", cuenta("41234567", "Esp", "Especial2026!", tipoEsp));
+        crear(admin, "/api/personas", cuenta("42345678", "Local", "LocalAula2026!", tipoLocal));
+        crear(admin, "/api/personas", cuenta("43456789", "Director", "Director2026!", tipoDir));
+        // DNI repetido, DNI mal formado y contraseña débil → 400
+        mvc.perform(as(admin, post("/api/personas")).content(cuenta("41234567", "Otro", "OtraClave2026!", tipoLocal)))
                 .andExpect(status().isBadRequest());
-        mvc.perform(as(admin, post("/api/usuarios")).content(usuario("1234", "corto", "OtraClave2026!", "LOCAL")))
+        mvc.perform(as(admin, post("/api/personas")).content(cuenta("1234", "Corto", "OtraClave2026!", tipoLocal)))
                 .andExpect(status().isBadRequest());
-        mvc.perform(as(admin, post("/api/usuarios")).content(usuario("44444444", "psico", "OtraClave2026!", "PSICOLOGO")))
-                .andExpect(status().isBadRequest());
-        mvc.perform(as(admin, post("/api/usuarios")).content(usuario("45555555", "debil", "solominusculas", "LOCAL")))
+        mvc.perform(as(admin, post("/api/personas")).content(cuenta("45555555", "Debil", "solominusculas", tipoLocal)))
                 .andExpect(status().isBadRequest());
         // el token dura 8 horas (exp - iat = 28800 s) y su sujeto es el DNI
         String payload = new String(java.util.Base64.getUrlDecoder().decode(admin.split("\\.")[1]));
@@ -116,14 +120,20 @@ class SeguridadYModeloTests {
         assertThat(exp - iat).isEqualTo(8 * 60 * 60);
         assertThat(payload).contains("\"sub\":\"00000001\"");
 
-        String lista = obtener(admin, "/api/usuarios");
-        assertThat(lista).contains("41234567", "esp.quispe", "ESPECIALISTA", "ADMIN_ESCUELA");
-        assertThat(lista.toLowerCase()).doesNotContain("password", "\"$2a$", "$2b$");
+        // ni la lista ni la ficha devuelven la contraseña o su hash
+        String ficha = obtener(admin, "/api/personas/" + esp);
+        assertThat(ficha).contains("41234567");
+        assertThat((obtener(admin, "/api/personas") + ficha).toLowerCase()).doesNotContain("password", "\"$2a$", "$2b$");
 
         especialista = login("41234567", "Especial2026!");
         local = login("42345678", "LocalAula2026!");
         adminEscuela = login("43456789", "Director2026!");
-        mvc.perform(as(especialista, get("/api/usuarios"))).andExpect(status().isForbidden());
+        // solo el ADMIN crea cuentas o asigna tipos con acceso: un LOCAL no puede darse permisos
+        mvc.perform(as(local, post("/api/personas")).content(cuenta("46666666", "Colado", "Colado2026!!", tipoLocal)))
+                .andExpect(status().isForbidden());
+        mvc.perform(as(local, post("/api/personas")).content("{\"nombres\":\"Sin\",\"apellidos\":\"Clave\",\"idRol\":" + tipoDir + "}"))
+                .andExpect(status().isForbidden());
+        mvc.perform(as(local, delete("/api/personas/" + esp))).andExpect(status().isForbidden());
     }
 
     @Test

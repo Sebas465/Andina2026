@@ -1,50 +1,42 @@
 package org.example.andina2026.serviceimplements;
 
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.example.andina2026.entities.Users;
-import org.example.andina2026.repositories.IUsersRepository;
-
-
-import java.util.List;
+import org.example.andina2026.entities.Persona;
+import org.example.andina2026.repositories.IPersonaRepository;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
-    private final IUsersRepository usersRepository;
+    private final IPersonaRepository personaRepository;
 
-    public JwtUserDetailsService(IUsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    public JwtUserDetailsService(IPersonaRepository personaRepository) {
+        this.personaRepository = personaRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        // H2.1: el identificador de inicio de sesión es el DNI
-        Users user = usersRepository.findByDni(username)
+        // H2.1: el identificador de inicio de sesión es el DNI de la persona
+        Persona persona = personaRepository.findByDni(username)
+                .filter(p -> p.getPassword() != null) // sin contraseña = sin cuenta
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
                                 "Usuario no encontrado: " + username
                         )
                 );
 
-        List<GrantedAuthority> authorities = user.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRol()))
-                .map(authority -> (GrantedAuthority) authority)
-                .toList();
-
+        // el Tipo_Persona es el rol: LOCAL → ROLE_LOCAL
         return User.builder()
-                .username(user.getDni())
-                .password(user.getPassword())
-                .authorities(authorities)
-                .disabled(!Boolean.TRUE.equals(user.getEnabled()))
+                .username(persona.getDni())
+                .password(persona.getPassword())
+                .authorities(new SimpleGrantedAuthority(persona.getRol().getAuthority()))
+                .disabled(!Boolean.TRUE.equals(persona.getEnabled()))
                 .build();
     }
 }

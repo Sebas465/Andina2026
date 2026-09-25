@@ -42,7 +42,7 @@ import org.springframework.security.web.SecurityFilterChain;
  *
  *  - passwordEncoder() define BCrypt como forma de cifrar contraseñas (hash de una sola vía:
  *    del hash NO se puede volver a la contraseña original).
- *  - Al REGISTRAR un usuario (UsersController) se llama a passwordEncoder.encode(clave) y se guarda
+ *  - Al REGISTRAR un usuario (PersonaController, solo el ADMIN) se llama a passwordEncoder.encode(clave) y se guarda
  *    en la base de datos SOLO el hash, nunca la contraseña en claro.
  *  - Al INICIAR SESIÓN, el authenticationProvider() usa el mismo BCrypt para comparar la contraseña
  *    escrita con el hash guardado (encoder.matches). BCrypt añade "sal" automática, así que dos

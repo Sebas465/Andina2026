@@ -1,6 +1,7 @@
 -- Datos de prueba Andina2026: 30 por tabla, IDs 1000–1029 (generado por generar_datos_andina.py)
 -- Uso: psql -h localhost -U postgres -d Andina2026 -f datos_prueba_andina.sql  (tras arrancar la app una vez para crear las tablas).
--- Cuentas: DNI 40001000-40001029 (LOCAL 1000-1014, ESPECIALISTA 1015-1024, ADMIN_ESCUELA 1025-1029), contraseña Andina2026!
+-- Cuentas (personas 1030-1059): DNI 40001000-40001029 (LOCAL, ESPECIALISTA, ADMIN_ESCUELA), contraseña Andina2026!
+-- ADMIN del sistema: persona 1, DNI 00000001, contraseña Andina2026!
 BEGIN;
 
 -- colegios
@@ -465,76 +466,50 @@ INSERT INTO perfiles_academicos (id_perfil_academico, detalles, notas, estado_ps
   (1028, 'Personal de la institución', NULL, NULL, 1028),
   (1029, 'Personal de la institución', NULL, NULL, 1029);
 
--- users
-INSERT INTO users (id, dni, username, password, enabled) VALUES
-  (1000, '40001000', 'local01', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE),
-  (1001, '40001001', 'local02', '$2a$10$GJm0e9TW22pE.T8/IPbRcub1VD.alUkiX9W1pf81wVb3TAD/zxxCi', TRUE),
-  (1002, '40001002', 'local03', '$2a$10$PzeCvBT6YhK8sbh92pUJr.3PjLPjX/R7elgarJMEWZ4PJfeZVQ4Qu', TRUE),
-  (1003, '40001003', 'local04', '$2a$10$gjmsPwBDRlWpfAhrujceL.vRBqS9S9PbWBXV0VPlD4F8Ghf4EXpYq', TRUE),
-  (1004, '40001004', 'local05', '$2a$10$VBpoJKA6DotgR/QWm8SjQOCFjZk4QPW5AUbiWXT2MWoVUgqTlrzqi', TRUE),
-  (1005, '40001005', 'local06', '$2a$10$.1MZmHrIfbNHRW6pWS1GXeDbQZfj0PWQlCXTehUd7HYVS8Urx4Fay', TRUE),
-  (1006, '40001006', 'local07', '$2a$10$o2iA3w1vaojZNeJLaOZ2runDLKl9dAbHIY1lxhtB2jMIrFeY7BkN6', TRUE),
-  (1007, '40001007', 'local08', '$2a$10$2fNm9VEpGKltdQeH4PIyIexD3hAhvKQJ908Dtcg/2aiQii/kn2gXi', TRUE),
-  (1008, '40001008', 'local09', '$2a$10$rk1qG4Uiy5kIynzhXrfl9.nDl/TBwgA.UxEpLiAHH1oS87eyXG3x.', TRUE),
-  (1009, '40001009', 'local10', '$2a$10$dkDcY2CASZe.dWOIuvJMCOVEL0u8lVvU6.LTfQl.AGtNqjOE66IIy', TRUE),
-  (1010, '40001010', 'local11', '$2a$10$UqFzJfvV8uFhAlJ/OKLZCuBY1fuL4cVu/Hx/S8B0a5imOTO5N.Jgq', TRUE),
-  (1011, '40001011', 'local12', '$2a$10$gbhVOvfZsJZ1GyJO3oOiI.SXHAnhhIdgxWTmHrtMRxFe7qCC2KdSi', TRUE),
-  (1012, '40001012', 'local13', '$2a$10$1CvITr/XVwlMQUQR0uZFY.umwXeGg5AtAp8Ej0DP1JiWtS1pKiYFW', TRUE),
-  (1013, '40001013', 'local14', '$2a$10$M23/Vh1NO5BIUzJ0yYJn.eE1EKs8q2Di7sAhPkreFzBQbAUZCi66.', TRUE),
-  (1014, '40001014', 'local15', '$2a$10$6MqSgHPVqFrTqHWYtxPDf.mHVhRjSLms2fs9WayDAw13i.6Dbm1.2', TRUE),
-  (1015, '40001015', 'especialista01', '$2a$10$ZharsGGfeeoZy3uKAkS2Xur6/2WXhQB8tVuZlSOgKd4B0mKf4BV6m', TRUE),
-  (1016, '40001016', 'especialista02', '$2a$10$yewp22rSrrLwdgpm1bLOYuh0eeZC1pjJofQc8CCWCC2qcq/OCqc8q', TRUE),
-  (1017, '40001017', 'especialista03', '$2a$10$0SAbVcwqFTthdKRFT23pueCrTyVg80Rr.WqQxxG0wqDCIW1TNj15q', TRUE),
-  (1018, '40001018', 'especialista04', '$2a$10$RvStVh8h1gM7TM6SkiwNGuSEr3nvSn1RcSQgOGtPTJI0Qwkt7mNQO', TRUE),
-  (1019, '40001019', 'especialista05', '$2a$10$YkL2yB9URXJEYtrB6PI2FeaGz8GrhXvAR3mVQn6Cro2dzeXDZ3XnS', TRUE),
-  (1020, '40001020', 'especialista06', '$2a$10$/dto2GO6WpJkIDYYT0r2oOkoZluhbriXvUoeq5RBh3qv5NUVmmhOy', TRUE),
-  (1021, '40001021', 'especialista07', '$2a$10$1vERhFiqMFJ0y6/yMs/pa.UiItvN3Gkz3Te899PE5XlpNxJmQ5/yy', TRUE),
-  (1022, '40001022', 'especialista08', '$2a$10$sGnN7TwrGWUS7bkldUYwmuwG9zW6IjrIaP8IqZLHnHIwcd8BiSOva', TRUE),
-  (1023, '40001023', 'especialista09', '$2a$10$3hTJfyBquBN6c65pLiMxGeyyXEFlWym59EbQs7TLSCdukd.BqtuoG', TRUE),
-  (1024, '40001024', 'especialista10', '$2a$10$wbF4.TNeR/BhRoHxj6EvHuhrJhFEPIYo75xDIU72hHFa7Lk4FCbLW', TRUE),
-  (1025, '40001025', 'director01', '$2a$10$p546wFT6dIf8aXT3iCulSOSwlKtvSkFcs.DSweQjmBoKm6tv76ZRS', TRUE),
-  (1026, '40001026', 'director02', '$2a$10$t1QFnS8h.XwC5Z2qZflj7OEAi.ob0Y8TrQas95i9WrovmpOvB5jAy', TRUE),
-  (1027, '40001027', 'director03', '$2a$10$zFoEYfP5jnAeGDOI6WAIzOISzPGWWY0TQdXSORU7Cgj1w5cq0up2C', TRUE),
-  (1028, '40001028', 'director04', '$2a$10$ajcjPgsUXNu98gu66tft1uFpEqklgP12FvCLbw3A.wModUpLoxUky', TRUE),
-  (1029, '40001029', 'director05', '$2a$10$U3la6GLLXCpfKa3FjNWx/.ohDnN7xM174xVCrGXcHiFyIy22zG2Vm', TRUE);
+-- cuentas: personas con DNI y contraseña (antes tablas users/roles); su Tipo_Persona es el rol
+INSERT INTO roles_persona (id_tipo_persona, detalle) VALUES
+  (1030, 'ADMIN'),
+  (1031, 'ADMIN_ESCUELA'),
+  (1032, 'ESPECIALISTA'),
+  (1033, 'LOCAL');
 
--- roles
-INSERT INTO roles (id, rol, user_id) VALUES
-  (1000, 'ROLE_LOCAL', 1000),
-  (1001, 'ROLE_LOCAL', 1001),
-  (1002, 'ROLE_LOCAL', 1002),
-  (1003, 'ROLE_LOCAL', 1003),
-  (1004, 'ROLE_LOCAL', 1004),
-  (1005, 'ROLE_LOCAL', 1005),
-  (1006, 'ROLE_LOCAL', 1006),
-  (1007, 'ROLE_LOCAL', 1007),
-  (1008, 'ROLE_LOCAL', 1008),
-  (1009, 'ROLE_LOCAL', 1009),
-  (1010, 'ROLE_LOCAL', 1010),
-  (1011, 'ROLE_LOCAL', 1011),
-  (1012, 'ROLE_LOCAL', 1012),
-  (1013, 'ROLE_LOCAL', 1013),
-  (1014, 'ROLE_LOCAL', 1014),
-  (1015, 'ROLE_ESPECIALISTA', 1015),
-  (1016, 'ROLE_ESPECIALISTA', 1016),
-  (1017, 'ROLE_ESPECIALISTA', 1017),
-  (1018, 'ROLE_ESPECIALISTA', 1018),
-  (1019, 'ROLE_ESPECIALISTA', 1019),
-  (1020, 'ROLE_ESPECIALISTA', 1020),
-  (1021, 'ROLE_ESPECIALISTA', 1021),
-  (1022, 'ROLE_ESPECIALISTA', 1022),
-  (1023, 'ROLE_ESPECIALISTA', 1023),
-  (1024, 'ROLE_ESPECIALISTA', 1024),
-  (1025, 'ROLE_ADMIN_ESCUELA', 1025),
-  (1026, 'ROLE_ADMIN_ESCUELA', 1026),
-  (1027, 'ROLE_ADMIN_ESCUELA', 1027),
-  (1028, 'ROLE_ADMIN_ESCUELA', 1028),
-  (1029, 'ROLE_ADMIN_ESCUELA', 1029);
+INSERT INTO personas (id_persona, codigo_estudiante, nombres, apellidos, fecha_nacimiento, correo, lengua_materna, estado, dni, password, enabled, id_aula, id_tipo_persona) VALUES
+  (1, NULL, 'Administrador', 'del sistema', NULL, NULL, NULL, 'ACTIVO', '00000001', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE, NULL, 1030),
+  (1030, 'EST-0F3F520C', 'Docente local 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001000', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE, 1000, 1033),
+  (1031, 'EST-28E4DE38', 'Docente local 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001001', '$2a$10$GJm0e9TW22pE.T8/IPbRcub1VD.alUkiX9W1pf81wVb3TAD/zxxCi', TRUE, 1001, 1033),
+  (1032, 'EST-40526FAD', 'Docente local 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001002', '$2a$10$PzeCvBT6YhK8sbh92pUJr.3PjLPjX/R7elgarJMEWZ4PJfeZVQ4Qu', TRUE, 1002, 1033),
+  (1033, 'EST-79C597FE', 'Docente local 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001003', '$2a$10$gjmsPwBDRlWpfAhrujceL.vRBqS9S9PbWBXV0VPlD4F8Ghf4EXpYq', TRUE, 1003, 1033),
+  (1034, 'EST-4183681D', 'Docente local 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001004', '$2a$10$VBpoJKA6DotgR/QWm8SjQOCFjZk4QPW5AUbiWXT2MWoVUgqTlrzqi', TRUE, 1004, 1033),
+  (1035, 'EST-52D763CB', 'Docente local 06', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001005', '$2a$10$.1MZmHrIfbNHRW6pWS1GXeDbQZfj0PWQlCXTehUd7HYVS8Urx4Fay', TRUE, 1005, 1033),
+  (1036, 'EST-6E147FC8', 'Docente local 07', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001006', '$2a$10$o2iA3w1vaojZNeJLaOZ2runDLKl9dAbHIY1lxhtB2jMIrFeY7BkN6', TRUE, 1006, 1033),
+  (1037, 'EST-79FA4924', 'Docente local 08', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001007', '$2a$10$2fNm9VEpGKltdQeH4PIyIexD3hAhvKQJ908Dtcg/2aiQii/kn2gXi', TRUE, 1007, 1033),
+  (1038, 'EST-0D233442', 'Docente local 09', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001008', '$2a$10$rk1qG4Uiy5kIynzhXrfl9.nDl/TBwgA.UxEpLiAHH1oS87eyXG3x.', TRUE, 1008, 1033),
+  (1039, 'EST-712AD665', 'Docente local 10', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001009', '$2a$10$dkDcY2CASZe.dWOIuvJMCOVEL0u8lVvU6.LTfQl.AGtNqjOE66IIy', TRUE, 1009, 1033),
+  (1040, 'EST-1C949691', 'Docente local 11', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001010', '$2a$10$UqFzJfvV8uFhAlJ/OKLZCuBY1fuL4cVu/Hx/S8B0a5imOTO5N.Jgq', TRUE, 1010, 1033),
+  (1041, 'EST-72890A41', 'Docente local 12', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001011', '$2a$10$gbhVOvfZsJZ1GyJO3oOiI.SXHAnhhIdgxWTmHrtMRxFe7qCC2KdSi', TRUE, 1011, 1033),
+  (1042, 'EST-4CEE928E', 'Docente local 13', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001012', '$2a$10$1CvITr/XVwlMQUQR0uZFY.umwXeGg5AtAp8Ej0DP1JiWtS1pKiYFW', TRUE, 1012, 1033),
+  (1043, 'EST-4F8CCA82', 'Docente local 14', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001013', '$2a$10$M23/Vh1NO5BIUzJ0yYJn.eE1EKs8q2Di7sAhPkreFzBQbAUZCi66.', TRUE, 1013, 1033),
+  (1044, 'EST-473D5374', 'Docente local 15', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001014', '$2a$10$6MqSgHPVqFrTqHWYtxPDf.mHVhRjSLms2fs9WayDAw13i.6Dbm1.2', TRUE, 1014, 1033),
+  (1045, 'EST-35D6B5F1', 'Especialista 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001015', '$2a$10$ZharsGGfeeoZy3uKAkS2Xur6/2WXhQB8tVuZlSOgKd4B0mKf4BV6m', TRUE, NULL, 1032),
+  (1046, 'EST-6445943A', 'Especialista 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001016', '$2a$10$yewp22rSrrLwdgpm1bLOYuh0eeZC1pjJofQc8CCWCC2qcq/OCqc8q', TRUE, NULL, 1032),
+  (1047, 'EST-4949EF47', 'Especialista 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001017', '$2a$10$0SAbVcwqFTthdKRFT23pueCrTyVg80Rr.WqQxxG0wqDCIW1TNj15q', TRUE, NULL, 1032),
+  (1048, 'EST-461EAF8B', 'Especialista 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001018', '$2a$10$RvStVh8h1gM7TM6SkiwNGuSEr3nvSn1RcSQgOGtPTJI0Qwkt7mNQO', TRUE, NULL, 1032),
+  (1049, 'EST-6BD3D1E6', 'Especialista 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001019', '$2a$10$YkL2yB9URXJEYtrB6PI2FeaGz8GrhXvAR3mVQn6Cro2dzeXDZ3XnS', TRUE, NULL, 1032),
+  (1050, 'EST-5D824D3C', 'Especialista 06', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001020', '$2a$10$/dto2GO6WpJkIDYYT0r2oOkoZluhbriXvUoeq5RBh3qv5NUVmmhOy', TRUE, NULL, 1032),
+  (1051, 'EST-6366BAF4', 'Especialista 07', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001021', '$2a$10$1vERhFiqMFJ0y6/yMs/pa.UiItvN3Gkz3Te899PE5XlpNxJmQ5/yy', TRUE, NULL, 1032),
+  (1052, 'EST-62519A5F', 'Especialista 08', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001022', '$2a$10$sGnN7TwrGWUS7bkldUYwmuwG9zW6IjrIaP8IqZLHnHIwcd8BiSOva', TRUE, NULL, 1032),
+  (1053, 'EST-3ED5F494', 'Especialista 09', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001023', '$2a$10$3hTJfyBquBN6c65pLiMxGeyyXEFlWym59EbQs7TLSCdukd.BqtuoG', TRUE, NULL, 1032),
+  (1054, 'EST-60219E5E', 'Especialista 10', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001024', '$2a$10$wbF4.TNeR/BhRoHxj6EvHuhrJhFEPIYo75xDIU72hHFa7Lk4FCbLW', TRUE, NULL, 1032),
+  (1055, 'EST-62F40C7D', 'Director 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001025', '$2a$10$p546wFT6dIf8aXT3iCulSOSwlKtvSkFcs.DSweQjmBoKm6tv76ZRS', TRUE, NULL, 1031),
+  (1056, 'EST-4B131D73', 'Director 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001026', '$2a$10$t1QFnS8h.XwC5Z2qZflj7OEAi.ob0Y8TrQas95i9WrovmpOvB5jAy', TRUE, NULL, 1031),
+  (1057, 'EST-3875CD05', 'Director 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001027', '$2a$10$zFoEYfP5jnAeGDOI6WAIzOISzPGWWY0TQdXSORU7Cgj1w5cq0up2C', TRUE, NULL, 1031),
+  (1058, 'EST-1EB628F1', 'Director 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001028', '$2a$10$ajcjPgsUXNu98gu66tft1uFpEqklgP12FvCLbw3A.wModUpLoxUky', TRUE, NULL, 1031),
+  (1059, 'EST-00530FC9', 'Director 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001029', '$2a$10$U3la6GLLXCpfKa3FjNWx/.ohDnN7xM174xVCrGXcHiFyIy22zG2Vm', TRUE, NULL, 1031);
 
 ALTER TABLE colegios ALTER COLUMN id_colegio RESTART WITH 1030;
 ALTER TABLE aulas ALTER COLUMN id_aula RESTART WITH 1030;
-ALTER TABLE roles_persona ALTER COLUMN id_tipo_persona RESTART WITH 1030;
-ALTER TABLE personas ALTER COLUMN id_persona RESTART WITH 1030;
+ALTER TABLE roles_persona ALTER COLUMN id_tipo_persona RESTART WITH 1034;
+ALTER TABLE personas ALTER COLUMN id_persona RESTART WITH 1060;
 ALTER TABLE grados ALTER COLUMN id_grado RESTART WITH 1030;
 ALTER TABLE periodos_academicos ALTER COLUMN id_periodo RESTART WITH 1030;
 ALTER TABLE cursos ALTER COLUMN id_curso RESTART WITH 1030;
@@ -543,7 +518,5 @@ ALTER TABLE materiales ALTER COLUMN id_material RESTART WITH 1030;
 ALTER TABLE matriculas ALTER COLUMN id_matricula RESTART WITH 1030;
 ALTER TABLE detalles_matricula ALTER COLUMN id_d_matricula RESTART WITH 1030;
 ALTER TABLE perfiles_academicos ALTER COLUMN id_perfil_academico RESTART WITH 1030;
-ALTER TABLE users ALTER COLUMN id RESTART WITH 1030;
-ALTER TABLE roles ALTER COLUMN id RESTART WITH 1030;
 
 COMMIT;

@@ -2,7 +2,10 @@ package org.example.andina2026.entities;
 
 import jakarta.persistence.*;
 
-/** Tabla «Rol» del ERD: tipo de persona (alumno, docente…). No confundir con Role (seguridad). */
+/**
+ * Tabla «Tipo_Persona» del ERD (alumno, docente, LOCAL, ESPECIALISTA…).
+ * También es el rol de seguridad: una persona con cuenta recibe ROLE_ + detalle (ver JwtUserDetailsService).
+ */
 @Entity
 @Table(name = "roles_persona")
 public class Rol {
@@ -15,6 +18,11 @@ public class Rol {
     private String detalle;
 
     public Rol() {
+    }
+
+    /** Nombre del rol de seguridad: "LOCAL" → "ROLE_LOCAL", "Coordinador académico" → "ROLE_COORDINADOR_ACADÉMICO". */
+    public String getAuthority() {
+        return "ROLE_" + detalle.trim().toUpperCase().replaceAll("\\s+", "_");
     }
 
     public Long getIdTipoPersona() {

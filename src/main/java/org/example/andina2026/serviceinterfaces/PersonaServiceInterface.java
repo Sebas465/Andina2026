@@ -12,4 +12,5 @@ public interface PersonaServiceInterface {
     public void update(Persona p);
     public void delete(Long id);
     List<Persona> alumnosEnRiesgo(double notaMinima);
+    public Optional<Persona> buscarPorDni(String dni);
 }

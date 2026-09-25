@@ -45,4 +45,9 @@ public class PersonaServiceImplement implements PersonaServiceInterface {
     public List<Persona> alumnosEnRiesgo(double notaMinima) {
         return repository.alumnosEnRiesgo(notaMinima);
     }
+
+    @Override
+    public Optional<Persona> buscarPorDni(String dni) {
+        return repository.findByDni(dni);
+    }
 }

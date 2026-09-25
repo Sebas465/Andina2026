@@ -64,9 +64,14 @@ class ReportesDecisionTests {
     @BeforeAll
     void datos() throws Exception {
         admin = login("00000001", "AdminPrueba2026");
-        crear(admin, "/api/usuarios", "{\"dni\":\"41111111\",\"username\":\"esp\",\"password\":\"Especial2026!\",\"roles\":[\"ESPECIALISTA\"]}");
-        crear(admin, "/api/usuarios", "{\"dni\":\"42222222\",\"username\":\"loc\",\"password\":\"LocalAula2026!\",\"roles\":[\"LOCAL\"]}");
-        crear(admin, "/api/usuarios", "{\"dni\":\"43333333\",\"username\":\"dir\",\"password\":\"Director2026!\",\"roles\":[\"ADMIN_ESCUELA\"]}");
+        // cuentas = personas con DNI y contraseña; su Tipo_Persona es el rol
+        String[][] cuentas = {{"ESPECIALISTA", "41111111", "Especial2026!"}, {"LOCAL", "42222222", "LocalAula2026!"},
+                {"ADMIN_ESCUELA", "43333333", "Director2026!"}};
+        for (String[] c : cuentas) {
+            long tipo = crear(admin, "/api/roles-persona", "{\"detalle\":\"" + c[0] + "\"}");
+            crear(admin, "/api/personas", "{\"nombres\":\"" + c[0] + "\",\"apellidos\":\"Prueba\",\"dni\":\"" + c[1]
+                    + "\",\"password\":\"" + c[2] + "\",\"idRol\":" + tipo + "}");
+        }
         especialista = login("41111111", "Especial2026!");
         local = login("42222222", "LocalAula2026!");
         adminEscuela = login("43333333", "Director2026!");

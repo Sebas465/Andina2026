@@ -32,10 +32,23 @@ public class Persona {
     @Column(name = "estado", length = 20)
     private String estado;
 
+    // Cuenta de acceso (antes tabla «users»): se inicia sesión con el DNI (H2.1)
+    @Column(name = "dni", length = 8, unique = true)
+    private String dni;
+
+    // hash BCrypt; null = la persona no tiene cuenta (p. ej. un alumno)
+    @Column(name = "password", length = 200)
+    private String password;
+
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled = true;
+
+    // opcional: el ADMIN del sistema y los especialistas no pertenecen a un aula
     @ManyToOne
-    @JoinColumn(name = "id_aula", nullable = false)
+    @JoinColumn(name = "id_aula")
     private Aula aula;
 
+    // Tipo_Persona: también es el rol de seguridad (LOCAL → ROLE_LOCAL)
     @ManyToOne
     @JoinColumn(name = "id_tipo_persona", nullable = false)
     private Rol rol;
@@ -105,6 +118,30 @@ public class Persona {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Aula getAula() {

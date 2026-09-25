@@ -11,7 +11,9 @@ XServiceImplement, XDTOInsert / XDTOList, controllers con ModelMapper, securitie
    El ADMIN entra con el DNI `00000001`.
 3. `POST /login` con `{"dni":"00000001","password":"…"}` → `token` (H2.1: se entra con **DNI**, sesión de 8 horas).
    En Swagger (`/swagger-ui/index.html`) pulsa **Authorize** y pega el token.
-4. Crear cuentas: `POST /api/usuarios` (solo ADMIN) con `{"dni","username","password","roles":["LOCAL"]}`.
+4. Crear cuentas: `POST /api/personas` (solo ADMIN) con `dni`, `password` e `idRol` de un tipo con acceso
+   (`ADMIN`, `ADMIN_ESCUELA`, `ESPECIALISTA` o `LOCAL`). La persona ES el usuario y su Tipo_Persona es su rol.
+   Una BD que aún tenga `users`/`roles` se pasa al modelo nuevo con `migracion_persona_cuenta.sql`.
    Contraseña: 8+ caracteres con mayúscula, número y símbolo. Roles del Word: `ESPECIALISTA`, `LOCAL`,
    `ADMIN_ESCUELA`, más `ADMIN` (administrador del sistema, H1.1/H1.2).
 5. Si tu BD tenía los datos de prueba anteriores, aplica `migracion_word.sql` (idempotente).
@@ -95,8 +97,10 @@ Pendiente del Word
   necesario para los rankings; aprobado desde 11).
 - `ASIGNACION_DOCENTE.id_aula` no tenía relación dibujada: se enlazó con AULA.
 - La tabla «Rol» del ERD (tipo de persona: alumno, docente…) es la entidad `Rol` en `roles_persona` y SÍ es del
-  modelo. Los roles de acceso (ESPECIALISTA, LOCAL, ADMIN_ESCUELA, ADMIN) son de seguridad: viven en `Users` / `Role`
-  (tablas `users` / `roles`), fuera del ERD, igual que en la demo.
+  modelo. **Persona es también el usuario** (columnas `dni`, `password` con hash BCrypt y `enabled`) y **Tipo_Persona
+  es el rol de seguridad**: el tipo `LOCAL` da `ROLE_LOCAL`, etc. Ya no existen las tablas `users` / `roles`.
+  Solo el ADMIN pone contraseñas o asigna los tipos con acceso (ADMIN, ADMIN_ESCUELA, ESPECIALISTA, LOCAL).
+  `personas.id_aula` es opcional (el ADMIN y los especialistas no tienen aula); para un alumno sigue siendo obligatorio.
 - Correcciones al código existente: `@NotBlank` en campos numéricos (daba error 500), el aula no guardaba su
   colegio, longitudes de columna según el ERD y faltaba `spring-boot-starter-validation` (las validaciones no se
   aplicaban).

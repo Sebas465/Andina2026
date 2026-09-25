@@ -1,5 +1,6 @@
 package org.example.andina2026.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
@@ -30,7 +31,21 @@ public class PersonaDTOInsert {
     @Size(max = 20, message = "estado admite como máximo 20 caracteres")
     private String estado;
 
-    @NotNull(message = "idAula es obligatorio")
+    // H2.1: con el DNI se inicia sesión
+    @Pattern(regexp = "\\d{8}", message = "dni debe tener 8 dígitos")
+    private String dni;
+
+    // Solo de entrada (nunca se devuelve) y solo la puede poner el ADMIN. Vacía = se conserva la actual.
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Size(min = 8, max = 72, message = "password debe tener entre 8 y 72 caracteres")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).*$",
+            message = "password debe tener al menos una mayúscula, un número y un símbolo")
+    private String password;
+
+    // cuenta habilitada (solo ADMIN); vacío = true al crear, se conserva al modificar
+    private Boolean enabled;
+
+    // obligatorio para alumnos; el ADMIN y los especialistas no tienen aula
     private Long idAula;
 
     @NotNull(message = "idRol es obligatorio")
@@ -98,6 +113,30 @@ public class PersonaDTOInsert {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Long getIdAula() {

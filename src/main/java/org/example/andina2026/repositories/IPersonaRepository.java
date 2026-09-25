@@ -7,9 +7,14 @@ import org.springframework.stereotype.Repository;
 import org.example.andina2026.entities.Persona;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IPersonaRepository extends JpaRepository<Persona, Long> {
+    // H2.1: el login busca a la persona por su DNI
+    Optional<Persona> findByDni(String dni);
+
+
     // ¿A quién debe atender primero psicología? Desaprobados con observación psicológica registrada.
     @Query(value = "SELECT p.*\n" +
             " FROM perfiles_academicos pa\n" +
