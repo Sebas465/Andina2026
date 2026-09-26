@@ -98,6 +98,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Login: público (aún no hay token)
                         .requestMatchers("/login").permitAll()
+                        // Lista de personas: pública (sin token); solo muestra datos no sensibles
+                        .requestMatchers(HttpMethod.GET, "/api/personas").permitAll()
                         // Documentación Swagger: pública
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         // Peticiones OPTIONS (CORS): públicas

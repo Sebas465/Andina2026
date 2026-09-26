@@ -86,6 +86,10 @@ class SeguridadYModeloTests {
     @Order(1)
     void sinTokenNoSeEntraYLoginMaloDa401() throws Exception {
         mvc.perform(get("/api/colegios")).andExpect(status().isUnauthorized());
+        // la lista de personas es pública (sin token) pero no trae datos sensibles; la ficha sí pide token
+        mvc.perform(get("/api/personas")).andExpect(status().isOk());
+        mvc.perform(get("/api/personas/1")).andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/personas").contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isUnauthorized());
         mvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"dni\":\"00000001\",\"password\":\"incorrecta\"}"))
                 .andExpect(status().isUnauthorized());

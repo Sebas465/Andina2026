@@ -51,7 +51,6 @@ public class PersonaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','ADMIN_ESCUELA','ESPECIALISTA','LOCAL')")
     public ResponseEntity<List<PersonaDTOList>> listar() {
         List<PersonaDTOList> lista = service.list()
                 .stream()
