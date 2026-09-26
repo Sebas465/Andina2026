@@ -1,7 +1,7 @@
 -- Datos de prueba Andina2026: 30 por tabla, IDs 1000–1029 (generado por generar_datos_andina.py)
 -- Uso: psql -h localhost -U postgres -d Andina2026 -f datos_prueba_andina.sql  (tras arrancar la app una vez para crear las tablas).
 -- Cuentas (personas 1030-1059): DNI 40001000-40001029 (LOCAL, ESPECIALISTA, ADMIN_ESCUELA), contraseña Andina2026!
--- ADMIN del sistema: persona 1, DNI 76588404, contraseña Andina2026!
+-- ADMIN del sistema: persona 1, DNI 76588404 (hash BCrypt propio)
 BEGIN;
 
 -- colegios
@@ -104,37 +104,37 @@ INSERT INTO roles_persona (id_tipo_persona, detalle) VALUES
   (1029, 'COORDINADOR PRONOEI');
 
 -- personas
-INSERT INTO personas (id_persona, codigo_estudiante, nombres, apellidos, fecha_nacimiento, correo, lengua_materna, estado, id_aula, id_tipo_persona) VALUES
-  (1000, 'EST-0F3F520C', 'Rosa', 'Quispe Mamani', '2010-01-01', 'rosa.quispe1000@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000),
-  (1001, 'EST-28E4DE38', 'Luis', 'Huamán Condori', '2011-02-02', 'luis.huaman1001@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000),
-  (1002, 'EST-40526FAD', 'Yeni', 'Mamani Apaza', '2012-03-03', 'yeni.mamani1002@andina.edu.pe', 'AMBOS', 'ACTIVO', 1000, 1000),
-  (1003, 'EST-79C597FE', 'Wilber', 'Choque Ccama', '2013-04-04', 'wilber.choque1003@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000),
-  (1004, 'EST-4183681D', 'Nayeli', 'Condori Huanca', '2010-05-05', 'nayeli.condori1004@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000),
-  (1005, 'EST-52D763CB', 'Edwin', 'Ccori Puma', '2011-06-06', 'edwin.ccori1005@andina.edu.pe', 'AMBOS', 'ACTIVO', 1000, 1000),
-  (1006, 'EST-6E147FC8', 'Maribel', 'Apaza Ticona', '2012-07-07', 'maribel.apaza1006@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000),
-  (1007, 'EST-79FA4924', 'Kevin', 'Huanca Flores', '2013-08-08', 'kevin.huanca1007@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000),
-  (1008, 'EST-0D233442', 'Soledad', 'Ticona Yupanqui', '2010-01-09', 'soledad.ticona1008@andina.edu.pe', 'AMBOS', 'ACTIVO', 1001, 1000),
-  (1009, 'EST-712AD665', 'Ronald', 'Yupanqui Cusi', '2011-02-10', 'ronald.yupanqui1009@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1002, 1000),
-  (1010, 'EST-1C949691', 'Flor', 'Puma Chambi', '2012-03-11', 'flor.puma1010@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1003, 1000),
-  (1011, 'EST-72890A41', 'Jhon', 'Chambi Quispe', '2013-04-12', 'jhon.chambi1011@andina.edu.pe', 'AMBOS', 'ACTIVO', 1004, 1000),
-  (1012, 'EST-4CEE928E', 'Ruth', 'Cusi Huillca', '2010-05-13', 'ruth.cusi1012@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1005, 1000),
-  (1013, 'EST-4F8CCA82', 'Alex', 'Huillca Sonco', '2011-06-14', 'alex.huillca1013@andina.edu.pe', 'CASTELLANO', 'ACTIVO', 1006, 1000),
-  (1014, 'EST-473D5374', 'Lucía', 'Sonco Layme', '2012-07-15', 'lucia.sonco1014@andina.edu.pe', 'CASTELLANO', 'ACTIVO', 1007, 1000),
-  (1015, 'EST-35D6B5F1', 'Percy', 'Layme Turpo', '2013-08-16', 'percy.layme1015@andina.edu.pe', 'CASTELLANO', 'ACTIVO', 1008, 1000),
-  (1016, 'EST-6445943A', 'Sonia', 'Turpo Callo', '2010-01-17', 'sonia.turpo1016@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1009, 1000),
-  (1017, 'EST-4949EF47', 'Hugo', 'Callo Coaquira', '2011-02-18', 'hugo.callo1017@andina.edu.pe', 'AMBOS', 'ACTIVO', 1010, 1000),
-  (1018, 'EST-461EAF8B', 'Karina', 'Coaquira Pari', '2012-03-19', 'karina.coaquira1018@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1001, 1000),
-  (1019, 'EST-6BD3D1E6', 'Elvis', 'Pari Anccasi', '2013-04-20', 'elvis.pari1019@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1002, 1000),
-  (1020, 'EST-5D824D3C', 'Milagros', 'Anccasi Rojas', '2010-05-21', 'milagros.anccasi1020@andina.edu.pe', 'AMBOS', 'ACTIVO', 1003, 1000),
-  (1021, 'EST-6366BAF4', 'Rubén', 'Rojas Villca', '2011-06-22', 'ruben.rojas1021@andina.edu.pe', 'QUECHUA', 'RETIRADO', 1004, 1000),
-  (1022, 'EST-62519A5F', 'Teodoro', 'Mendoza Ccahuana', '1977-09-02', 'teodoro.mendoza1022@andina.edu.pe', NULL, 'ACTIVO', 1000, 1001),
-  (1023, 'EST-3ED5F494', 'Carmen', 'Paucar Tito', '1982-03-02', 'carmen.paucar1023@andina.edu.pe', NULL, 'ACTIVO', 1003, 1001),
-  (1024, 'EST-60219E5E', 'Julián', 'Tito Soto', '1986-04-09', 'julian.tito1024@andina.edu.pe', NULL, 'ACTIVO', 1006, 1001),
-  (1025, 'EST-62F40C7D', 'Gladys', 'Soto Huaman', '1986-06-24', 'gladys.soto1025@andina.edu.pe', NULL, 'ACTIVO', 1009, 1001),
-  (1026, 'EST-4B131D73', 'Fortunato', 'Vargas Llacta', '1989-07-07', 'fortunato.vargas1026@andina.edu.pe', NULL, 'ACTIVO', 1012, 1001),
-  (1027, 'EST-3875CD05', 'Nélida', 'Llacta Inca', '1994-04-16', 'nelida.llacta1027@andina.edu.pe', NULL, 'ACTIVO', 1015, 1001),
-  (1028, 'EST-1EB628F1', 'Marisol', 'Salas Medina', '1986-02-25', 'marisol.salas1028@andina.edu.pe', NULL, 'ACTIVO', 1000, 1002),
-  (1029, 'EST-00530FC9', 'Víctor', 'Ortiz Guevara', '1994-12-01', 'victor.ortiz1029@andina.edu.pe', NULL, 'ACTIVO', 1003, 1002);
+INSERT INTO personas (id_persona, codigo_estudiante, nombres, apellidos, fecha_nacimiento, correo, lengua_materna, estado, id_aula, id_tipo_persona, enabled) VALUES
+  (1000, 'EST-0F3F520C', 'Rosa', 'Quispe Mamani', '2010-01-01', 'rosa.quispe1000@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000, TRUE),
+  (1001, 'EST-28E4DE38', 'Luis', 'Huamán Condori', '2011-02-02', 'luis.huaman1001@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000, TRUE),
+  (1002, 'EST-40526FAD', 'Yeni', 'Mamani Apaza', '2012-03-03', 'yeni.mamani1002@andina.edu.pe', 'AMBOS', 'ACTIVO', 1000, 1000, TRUE),
+  (1003, 'EST-79C597FE', 'Wilber', 'Choque Ccama', '2013-04-04', 'wilber.choque1003@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000, TRUE),
+  (1004, 'EST-4183681D', 'Nayeli', 'Condori Huanca', '2010-05-05', 'nayeli.condori1004@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000, TRUE),
+  (1005, 'EST-52D763CB', 'Edwin', 'Ccori Puma', '2011-06-06', 'edwin.ccori1005@andina.edu.pe', 'AMBOS', 'ACTIVO', 1000, 1000, TRUE),
+  (1006, 'EST-6E147FC8', 'Maribel', 'Apaza Ticona', '2012-07-07', 'maribel.apaza1006@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000, TRUE),
+  (1007, 'EST-79FA4924', 'Kevin', 'Huanca Flores', '2013-08-08', 'kevin.huanca1007@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1000, 1000, TRUE),
+  (1008, 'EST-0D233442', 'Soledad', 'Ticona Yupanqui', '2010-01-09', 'soledad.ticona1008@andina.edu.pe', 'AMBOS', 'ACTIVO', 1001, 1000, TRUE),
+  (1009, 'EST-712AD665', 'Ronald', 'Yupanqui Cusi', '2011-02-10', 'ronald.yupanqui1009@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1002, 1000, TRUE),
+  (1010, 'EST-1C949691', 'Flor', 'Puma Chambi', '2012-03-11', 'flor.puma1010@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1003, 1000, TRUE),
+  (1011, 'EST-72890A41', 'Jhon', 'Chambi Quispe', '2013-04-12', 'jhon.chambi1011@andina.edu.pe', 'AMBOS', 'ACTIVO', 1004, 1000, TRUE),
+  (1012, 'EST-4CEE928E', 'Ruth', 'Cusi Huillca', '2010-05-13', 'ruth.cusi1012@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1005, 1000, TRUE),
+  (1013, 'EST-4F8CCA82', 'Alex', 'Huillca Sonco', '2011-06-14', 'alex.huillca1013@andina.edu.pe', 'CASTELLANO', 'ACTIVO', 1006, 1000, TRUE),
+  (1014, 'EST-473D5374', 'Lucía', 'Sonco Layme', '2012-07-15', 'lucia.sonco1014@andina.edu.pe', 'CASTELLANO', 'ACTIVO', 1007, 1000, TRUE),
+  (1015, 'EST-35D6B5F1', 'Percy', 'Layme Turpo', '2013-08-16', 'percy.layme1015@andina.edu.pe', 'CASTELLANO', 'ACTIVO', 1008, 1000, TRUE),
+  (1016, 'EST-6445943A', 'Sonia', 'Turpo Callo', '2010-01-17', 'sonia.turpo1016@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1009, 1000, TRUE),
+  (1017, 'EST-4949EF47', 'Hugo', 'Callo Coaquira', '2011-02-18', 'hugo.callo1017@andina.edu.pe', 'AMBOS', 'ACTIVO', 1010, 1000, TRUE),
+  (1018, 'EST-461EAF8B', 'Karina', 'Coaquira Pari', '2012-03-19', 'karina.coaquira1018@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1001, 1000, TRUE),
+  (1019, 'EST-6BD3D1E6', 'Elvis', 'Pari Anccasi', '2013-04-20', 'elvis.pari1019@andina.edu.pe', 'QUECHUA', 'ACTIVO', 1002, 1000, TRUE),
+  (1020, 'EST-5D824D3C', 'Milagros', 'Anccasi Rojas', '2010-05-21', 'milagros.anccasi1020@andina.edu.pe', 'AMBOS', 'ACTIVO', 1003, 1000, TRUE),
+  (1021, 'EST-6366BAF4', 'Rubén', 'Rojas Villca', '2011-06-22', 'ruben.rojas1021@andina.edu.pe', 'QUECHUA', 'RETIRADO', 1004, 1000, TRUE),
+  (1022, 'EST-62519A5F', 'Teodoro', 'Mendoza Ccahuana', '1977-09-02', 'teodoro.mendoza1022@andina.edu.pe', NULL, 'ACTIVO', 1000, 1001, TRUE),
+  (1023, 'EST-3ED5F494', 'Carmen', 'Paucar Tito', '1982-03-02', 'carmen.paucar1023@andina.edu.pe', NULL, 'ACTIVO', 1003, 1001, TRUE),
+  (1024, 'EST-60219E5E', 'Julián', 'Tito Soto', '1986-04-09', 'julian.tito1024@andina.edu.pe', NULL, 'ACTIVO', 1006, 1001, TRUE),
+  (1025, 'EST-62F40C7D', 'Gladys', 'Soto Huaman', '1986-06-24', 'gladys.soto1025@andina.edu.pe', NULL, 'ACTIVO', 1009, 1001, TRUE),
+  (1026, 'EST-4B131D73', 'Fortunato', 'Vargas Llacta', '1989-07-07', 'fortunato.vargas1026@andina.edu.pe', NULL, 'ACTIVO', 1012, 1001, TRUE),
+  (1027, 'EST-3875CD05', 'Nélida', 'Llacta Inca', '1994-04-16', 'nelida.llacta1027@andina.edu.pe', NULL, 'ACTIVO', 1015, 1001, TRUE),
+  (1028, 'EST-1EB628F1', 'Marisol', 'Salas Medina', '1986-02-25', 'marisol.salas1028@andina.edu.pe', NULL, 'ACTIVO', 1000, 1002, TRUE),
+  (1029, 'EST-00530FC9', 'Víctor', 'Ortiz Guevara', '1994-12-01', 'victor.ortiz1029@andina.edu.pe', NULL, 'ACTIVO', 1003, 1002, TRUE);
 
 -- grados
 INSERT INTO grados (id_grado, nombre, nivel) VALUES
@@ -441,37 +441,37 @@ INSERT INTO roles_persona (id_tipo_persona, detalle) VALUES
   (1033, 'LOCAL');
 
 INSERT INTO personas (id_persona, codigo_estudiante, nombres, apellidos, fecha_nacimiento, correo, lengua_materna, estado, dni, password, enabled, id_aula, id_tipo_persona) VALUES
-  (1, NULL, 'Administrador', 'del sistema', NULL, NULL, NULL, 'ACTIVO', '76588404', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE, NULL, 1030),
-  (1030, 'EST-0F3F520C', 'Docente local 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001000', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE, 1000, 1033),
-  (1031, 'EST-28E4DE38', 'Docente local 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001001', '$2a$10$GJm0e9TW22pE.T8/IPbRcub1VD.alUkiX9W1pf81wVb3TAD/zxxCi', TRUE, 1001, 1033),
-  (1032, 'EST-40526FAD', 'Docente local 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001002', '$2a$10$PzeCvBT6YhK8sbh92pUJr.3PjLPjX/R7elgarJMEWZ4PJfeZVQ4Qu', TRUE, 1002, 1033),
-  (1033, 'EST-79C597FE', 'Docente local 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001003', '$2a$10$gjmsPwBDRlWpfAhrujceL.vRBqS9S9PbWBXV0VPlD4F8Ghf4EXpYq', TRUE, 1003, 1033),
-  (1034, 'EST-4183681D', 'Docente local 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001004', '$2a$10$VBpoJKA6DotgR/QWm8SjQOCFjZk4QPW5AUbiWXT2MWoVUgqTlrzqi', TRUE, 1004, 1033),
-  (1035, 'EST-52D763CB', 'Docente local 06', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001005', '$2a$10$.1MZmHrIfbNHRW6pWS1GXeDbQZfj0PWQlCXTehUd7HYVS8Urx4Fay', TRUE, 1005, 1033),
-  (1036, 'EST-6E147FC8', 'Docente local 07', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001006', '$2a$10$o2iA3w1vaojZNeJLaOZ2runDLKl9dAbHIY1lxhtB2jMIrFeY7BkN6', TRUE, 1006, 1033),
-  (1037, 'EST-79FA4924', 'Docente local 08', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001007', '$2a$10$2fNm9VEpGKltdQeH4PIyIexD3hAhvKQJ908Dtcg/2aiQii/kn2gXi', TRUE, 1007, 1033),
-  (1038, 'EST-0D233442', 'Docente local 09', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001008', '$2a$10$rk1qG4Uiy5kIynzhXrfl9.nDl/TBwgA.UxEpLiAHH1oS87eyXG3x.', TRUE, 1008, 1033),
-  (1039, 'EST-712AD665', 'Docente local 10', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001009', '$2a$10$dkDcY2CASZe.dWOIuvJMCOVEL0u8lVvU6.LTfQl.AGtNqjOE66IIy', TRUE, 1009, 1033),
-  (1040, 'EST-1C949691', 'Docente local 11', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001010', '$2a$10$UqFzJfvV8uFhAlJ/OKLZCuBY1fuL4cVu/Hx/S8B0a5imOTO5N.Jgq', TRUE, 1010, 1033),
-  (1041, 'EST-72890A41', 'Docente local 12', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001011', '$2a$10$gbhVOvfZsJZ1GyJO3oOiI.SXHAnhhIdgxWTmHrtMRxFe7qCC2KdSi', TRUE, 1011, 1033),
-  (1042, 'EST-4CEE928E', 'Docente local 13', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001012', '$2a$10$1CvITr/XVwlMQUQR0uZFY.umwXeGg5AtAp8Ej0DP1JiWtS1pKiYFW', TRUE, 1012, 1033),
-  (1043, 'EST-4F8CCA82', 'Docente local 14', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001013', '$2a$10$M23/Vh1NO5BIUzJ0yYJn.eE1EKs8q2Di7sAhPkreFzBQbAUZCi66.', TRUE, 1013, 1033),
-  (1044, 'EST-473D5374', 'Docente local 15', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001014', '$2a$10$6MqSgHPVqFrTqHWYtxPDf.mHVhRjSLms2fs9WayDAw13i.6Dbm1.2', TRUE, 1014, 1033),
-  (1045, 'EST-35D6B5F1', 'Especialista 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001015', '$2a$10$ZharsGGfeeoZy3uKAkS2Xur6/2WXhQB8tVuZlSOgKd4B0mKf4BV6m', TRUE, NULL, 1032),
-  (1046, 'EST-6445943A', 'Especialista 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001016', '$2a$10$yewp22rSrrLwdgpm1bLOYuh0eeZC1pjJofQc8CCWCC2qcq/OCqc8q', TRUE, NULL, 1032),
-  (1047, 'EST-4949EF47', 'Especialista 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001017', '$2a$10$0SAbVcwqFTthdKRFT23pueCrTyVg80Rr.WqQxxG0wqDCIW1TNj15q', TRUE, NULL, 1032),
-  (1048, 'EST-461EAF8B', 'Especialista 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001018', '$2a$10$RvStVh8h1gM7TM6SkiwNGuSEr3nvSn1RcSQgOGtPTJI0Qwkt7mNQO', TRUE, NULL, 1032),
-  (1049, 'EST-6BD3D1E6', 'Especialista 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001019', '$2a$10$YkL2yB9URXJEYtrB6PI2FeaGz8GrhXvAR3mVQn6Cro2dzeXDZ3XnS', TRUE, NULL, 1032),
-  (1050, 'EST-5D824D3C', 'Especialista 06', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001020', '$2a$10$/dto2GO6WpJkIDYYT0r2oOkoZluhbriXvUoeq5RBh3qv5NUVmmhOy', TRUE, NULL, 1032),
-  (1051, 'EST-6366BAF4', 'Especialista 07', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001021', '$2a$10$1vERhFiqMFJ0y6/yMs/pa.UiItvN3Gkz3Te899PE5XlpNxJmQ5/yy', TRUE, NULL, 1032),
-  (1052, 'EST-62519A5F', 'Especialista 08', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001022', '$2a$10$sGnN7TwrGWUS7bkldUYwmuwG9zW6IjrIaP8IqZLHnHIwcd8BiSOva', TRUE, NULL, 1032),
-  (1053, 'EST-3ED5F494', 'Especialista 09', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001023', '$2a$10$3hTJfyBquBN6c65pLiMxGeyyXEFlWym59EbQs7TLSCdukd.BqtuoG', TRUE, NULL, 1032),
-  (1054, 'EST-60219E5E', 'Especialista 10', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001024', '$2a$10$wbF4.TNeR/BhRoHxj6EvHuhrJhFEPIYo75xDIU72hHFa7Lk4FCbLW', TRUE, NULL, 1032),
-  (1055, 'EST-62F40C7D', 'Director 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001025', '$2a$10$p546wFT6dIf8aXT3iCulSOSwlKtvSkFcs.DSweQjmBoKm6tv76ZRS', TRUE, NULL, 1031),
-  (1056, 'EST-4B131D73', 'Director 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001026', '$2a$10$t1QFnS8h.XwC5Z2qZflj7OEAi.ob0Y8TrQas95i9WrovmpOvB5jAy', TRUE, NULL, 1031),
-  (1057, 'EST-3875CD05', 'Director 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001027', '$2a$10$zFoEYfP5jnAeGDOI6WAIzOISzPGWWY0TQdXSORU7Cgj1w5cq0up2C', TRUE, NULL, 1031),
-  (1058, 'EST-1EB628F1', 'Director 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001028', '$2a$10$ajcjPgsUXNu98gu66tft1uFpEqklgP12FvCLbw3A.wModUpLoxUky', TRUE, NULL, 1031),
-  (1059, 'EST-00530FC9', 'Director 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001029', '$2a$10$U3la6GLLXCpfKa3FjNWx/.ohDnN7xM174xVCrGXcHiFyIy22zG2Vm', TRUE, NULL, 1031);
+  (1, NULL, 'Administrador', 'del sistema', NULL, NULL, NULL, 'ACTIVO', '76588404', '$2a$12$FqSjYq5IIBHKVeEeJ3aTOOds.e/jVaRCXdZY9j2qxj1HlyhvEJx/2', TRUE, NULL, 1030),
+  (1030, 'EST-6D51BBBF', 'Docente local 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001000', '$2a$10$REbcPaufjl6Xl7rTd0LGuOZxmIHr8L1QlnJTWxs7fHYWwEegwo.nq', TRUE, 1000, 1033),
+  (1031, 'EST-2A7CA8AC', 'Docente local 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001001', '$2a$10$GJm0e9TW22pE.T8/IPbRcub1VD.alUkiX9W1pf81wVb3TAD/zxxCi', TRUE, 1001, 1033),
+  (1032, 'EST-2B97C85B', 'Docente local 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001002', '$2a$10$PzeCvBT6YhK8sbh92pUJr.3PjLPjX/R7elgarJMEWZ4PJfeZVQ4Qu', TRUE, 1002, 1033),
+  (1033, 'EST-54BB21EA', 'Docente local 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001003', '$2a$10$gjmsPwBDRlWpfAhrujceL.vRBqS9S9PbWBXV0VPlD4F8Ghf4EXpYq', TRUE, 1003, 1033),
+  (1034, 'EST-0BEEB1A7', 'Docente local 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001004', '$2a$10$VBpoJKA6DotgR/QWm8SjQOCFjZk4QPW5AUbiWXT2MWoVUgqTlrzqi', TRUE, 1004, 1033),
+  (1035, 'EST-5B6DF643', 'Docente local 06', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001005', '$2a$10$.1MZmHrIfbNHRW6pWS1GXeDbQZfj0PWQlCXTehUd7HYVS8Urx4Fay', TRUE, 1005, 1033),
+  (1036, 'EST-3E163599', 'Docente local 07', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001006', '$2a$10$o2iA3w1vaojZNeJLaOZ2runDLKl9dAbHIY1lxhtB2jMIrFeY7BkN6', TRUE, 1006, 1033),
+  (1037, 'EST-0B961294', 'Docente local 08', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001007', '$2a$10$2fNm9VEpGKltdQeH4PIyIexD3hAhvKQJ908Dtcg/2aiQii/kn2gXi', TRUE, 1007, 1033),
+  (1038, 'EST-6230839A', 'Docente local 09', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001008', '$2a$10$rk1qG4Uiy5kIynzhXrfl9.nDl/TBwgA.UxEpLiAHH1oS87eyXG3x.', TRUE, 1008, 1033),
+  (1039, 'EST-706C7D01', 'Docente local 10', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001009', '$2a$10$dkDcY2CASZe.dWOIuvJMCOVEL0u8lVvU6.LTfQl.AGtNqjOE66IIy', TRUE, 1009, 1033),
+  (1040, 'EST-462FE568', 'Docente local 11', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001010', '$2a$10$UqFzJfvV8uFhAlJ/OKLZCuBY1fuL4cVu/Hx/S8B0a5imOTO5N.Jgq', TRUE, 1010, 1033),
+  (1041, 'EST-6A3232CA', 'Docente local 12', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001011', '$2a$10$gbhVOvfZsJZ1GyJO3oOiI.SXHAnhhIdgxWTmHrtMRxFe7qCC2KdSi', TRUE, 1011, 1033),
+  (1042, 'EST-5DCDBEF0', 'Docente local 13', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001012', '$2a$10$1CvITr/XVwlMQUQR0uZFY.umwXeGg5AtAp8Ej0DP1JiWtS1pKiYFW', TRUE, 1012, 1033),
+  (1043, 'EST-4718FFC7', 'Docente local 14', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001013', '$2a$10$M23/Vh1NO5BIUzJ0yYJn.eE1EKs8q2Di7sAhPkreFzBQbAUZCi66.', TRUE, 1013, 1033),
+  (1044, 'EST-61E59CE3', 'Docente local 15', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001014', '$2a$10$6MqSgHPVqFrTqHWYtxPDf.mHVhRjSLms2fs9WayDAw13i.6Dbm1.2', TRUE, 1014, 1033),
+  (1045, 'EST-56AA41F5', 'Especialista 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001015', '$2a$10$ZharsGGfeeoZy3uKAkS2Xur6/2WXhQB8tVuZlSOgKd4B0mKf4BV6m', TRUE, NULL, 1032),
+  (1046, 'EST-78FEA1D1', 'Especialista 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001016', '$2a$10$yewp22rSrrLwdgpm1bLOYuh0eeZC1pjJofQc8CCWCC2qcq/OCqc8q', TRUE, NULL, 1032),
+  (1047, 'EST-1F7CE55C', 'Especialista 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001017', '$2a$10$0SAbVcwqFTthdKRFT23pueCrTyVg80Rr.WqQxxG0wqDCIW1TNj15q', TRUE, NULL, 1032),
+  (1048, 'EST-2ECC44D5', 'Especialista 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001018', '$2a$10$RvStVh8h1gM7TM6SkiwNGuSEr3nvSn1RcSQgOGtPTJI0Qwkt7mNQO', TRUE, NULL, 1032),
+  (1049, 'EST-56650C24', 'Especialista 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001019', '$2a$10$YkL2yB9URXJEYtrB6PI2FeaGz8GrhXvAR3mVQn6Cro2dzeXDZ3XnS', TRUE, NULL, 1032),
+  (1050, 'EST-14C706A6', 'Especialista 06', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001020', '$2a$10$/dto2GO6WpJkIDYYT0r2oOkoZluhbriXvUoeq5RBh3qv5NUVmmhOy', TRUE, NULL, 1032),
+  (1051, 'EST-651BD78E', 'Especialista 07', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001021', '$2a$10$1vERhFiqMFJ0y6/yMs/pa.UiItvN3Gkz3Te899PE5XlpNxJmQ5/yy', TRUE, NULL, 1032),
+  (1052, 'EST-01B8F09C', 'Especialista 08', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001022', '$2a$10$sGnN7TwrGWUS7bkldUYwmuwG9zW6IjrIaP8IqZLHnHIwcd8BiSOva', TRUE, NULL, 1032),
+  (1053, 'EST-0F19A399', 'Especialista 09', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001023', '$2a$10$3hTJfyBquBN6c65pLiMxGeyyXEFlWym59EbQs7TLSCdukd.BqtuoG', TRUE, NULL, 1032),
+  (1054, 'EST-0D07BE3C', 'Especialista 10', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001024', '$2a$10$wbF4.TNeR/BhRoHxj6EvHuhrJhFEPIYo75xDIU72hHFa7Lk4FCbLW', TRUE, NULL, 1032),
+  (1055, 'EST-122C5B70', 'Director 01', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001025', '$2a$10$p546wFT6dIf8aXT3iCulSOSwlKtvSkFcs.DSweQjmBoKm6tv76ZRS', TRUE, NULL, 1031),
+  (1056, 'EST-002C01B0', 'Director 02', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001026', '$2a$10$t1QFnS8h.XwC5Z2qZflj7OEAi.ob0Y8TrQas95i9WrovmpOvB5jAy', TRUE, NULL, 1031),
+  (1057, 'EST-5CAD87C2', 'Director 03', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001027', '$2a$10$zFoEYfP5jnAeGDOI6WAIzOISzPGWWY0TQdXSORU7Cgj1w5cq0up2C', TRUE, NULL, 1031),
+  (1058, 'EST-5D3DCE32', 'Director 04', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001028', '$2a$10$ajcjPgsUXNu98gu66tft1uFpEqklgP12FvCLbw3A.wModUpLoxUky', TRUE, NULL, 1031),
+  (1059, 'EST-02071BEC', 'Director 05', 'Cuenta de prueba', NULL, NULL, NULL, 'ACTIVO', '40001029', '$2a$10$U3la6GLLXCpfKa3FjNWx/.ohDnN7xM174xVCrGXcHiFyIy22zG2Vm', TRUE, NULL, 1031);
 
 ALTER TABLE colegios ALTER COLUMN id_colegio RESTART WITH 1030;
 ALTER TABLE aulas ALTER COLUMN id_aula RESTART WITH 1030;
