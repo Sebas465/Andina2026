@@ -8,32 +8,32 @@ import jakarta.persistence.*;
 public class Rol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_TipoPersona;
+    private Long idTipoPersona;
 
     @Column(name = "detalleRol", length = 50, nullable = false)
-    private Long detalle;
+    private String detalle;
 
-    public Rol(Long id_TipoPersona, Long detalle) {
-        this.id_TipoPersona = id_TipoPersona;
+    public Rol() {
+    }
+
+    public Rol(Long idTipoPersona, String detalle) {
+        this.idTipoPersona = idTipoPersona;
         this.detalle = detalle;
     }
 
-    public Rol() { }
-
-    public Long getId_TipoPersona() {
-        return id_TipoPersona;
+    public Long getIdTipoPersona() {
+        return idTipoPersona;
     }
 
-    public void setId_TipoPersona(Long id_TipoPersona) {
-        this.id_TipoPersona = id_TipoPersona;
+    public void setIdTipoPersona(Long idTipoPersona) {
+        this.idTipoPersona = idTipoPersona;
     }
 
-    public Long getDetalle() {
+    public String getDetalle() {
         return detalle;
     }
 
-    public void setDetalle(Long detalle) {
+    public void setDetalle(String detalle) {
         this.detalle = detalle;
     }
-
 }
