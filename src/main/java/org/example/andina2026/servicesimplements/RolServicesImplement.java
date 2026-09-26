@@ -5,6 +5,7 @@ import org.example.andina2026.repositories.IRolRepository;
 import org.example.andina2026.servicesinterfaces.IRolService;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RolServicesImplement implements IRolService {
 
@@ -22,5 +23,10 @@ public class RolServicesImplement implements IRolService {
     @Override
     public List<Rol> list() {
         return rR.findAll();
+    }
+
+    @Override
+    public Optional<Rol> listId(Long id) {
+        return Optional.empty();
     }
 }

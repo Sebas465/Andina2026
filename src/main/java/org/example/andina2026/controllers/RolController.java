@@ -1,13 +1,19 @@
 package org.example.andina2026.controllers;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.validation.Valid;
 import org.example.andina2026.dtos.RolDTOInsert;
 import org.example.andina2026.dtos.RolDTOList;
+import org.example.andina2026.entities.Rol;
 import org.example.andina2026.servicesinterfaces.IRolService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 public class RolController {
@@ -31,19 +37,25 @@ public class RolController {
     //Post envia
     @PostMapping
     public ResponseEntity<RolDTOInsert> registrar(
-            @Valid @RequestBody StreamingDTOInsert dto) {
-        Streaming st = modelMapper.map(dto, Streaming.class);
-        cS.insert(st);
-        StreamingDTOInsert responseDTO =
-                modelMapper.map(st, StreamingDTOInsert.class);
+            @Valid @RequestBody RolDTOInsert dto) {
+        Rol ro = modelMapper.map(dto, Rol.class);
+        rS.insert(ro);
+        RolDTOInsert responseDTO =
+                modelMapper.map(ro, RolDTOInsert.class);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(st.getIdStreaming())
+                .buildAndExpand(ro.getIdTipoPersona())
                 .toUri();
         return ResponseEntity
                 .created(location)
                 .body(responseDTO);
+    }
+
+    @GetMapping("/identificador")
+    public ResponseEntity<List<RolDTOInsert>>
+            buscarporid(@RequestParam boolean r) {
+        List<RolDTOInsert> lista = rS.
     }
 }
