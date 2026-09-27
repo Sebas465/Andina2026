@@ -27,6 +27,6 @@ public class RolServicesImplement implements IRolService {
 
     @Override
     public Optional<Rol> listId(Long id) {
-        return Optional.empty();
+        return rR.findById(id);
     }
 }

@@ -55,7 +55,13 @@ public class RolController {
 
     @GetMapping("/identificador")
     public ResponseEntity<List<RolDTOInsert>>
-            buscarporid(@RequestParam boolean r) {
-        List<RolDTOInsert> lista = rS.
+            buscarporid(@RequestParam long r) {
+        List<RolDTOInsert> lista = rS.listId(r).
+                stream()
+                .map(rol ->
+                        modelMapper.map(rol,
+                                RolDTOInsert.class))
+                .toList();
+        return ResponseEntity.ok(lista);
     }
 }
